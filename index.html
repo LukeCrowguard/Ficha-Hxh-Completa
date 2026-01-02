@@ -134,7 +134,7 @@
         Shield, Zap, Heart, Sword, Brain, Activity, Ghost, Feather, Dna, 
         Dice5, Trash2, Edit3, Save, Plus, X, Camera, ScrollText, Box,
         Users, Upload, Share2, Copy, Hexagon,
-        Monitor, Target, PawPrint, Terminal, ChevronRight, ImageIcon, BatteryCharging
+        Monitor, Target, PawPrint, Terminal, ChevronRight, ImageIcon, BatteryCharging, Sparkles
       } from 'https://esm.sh/lucide-react@0.294.0';
 
       const utf8_to_b64 = (str) => window.btoa(unescape(encodeURIComponent(str)));
@@ -156,6 +156,37 @@
         } catch (e) { return { total: 0, rolls: [], str: diceStr }; }
       };
 
+      // Helper function to resize images before saving
+      const resizeImage = (file, maxWidth = 600) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    // Export as JPEG with 70% quality to save space
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.onerror = (error) => reject(error);
+            };
+            reader.onerror = (error) => reject(error);
+        });
+      };
+
       const NenType = {
         Enhancer: 'Reforço',
         Transmuter: 'Transformação',
@@ -170,7 +201,7 @@
         [NenType.Transmuter]: '#d500f9', 
         [NenType.Emitter]: '#29b6f6',
         [NenType.Conjurer]: '#ff1744', 
-        [NenType.Manipulator]: '#00e676', 
+        [NenType.Manipulator]: '#ff6d00', // ORANGE - Changed to differentiate from Enhancer
         [NenType.Specialist]: '#ffea00',
       };
 
@@ -192,7 +223,7 @@
         maxHp: 34, currentHp: 34, maxNen: 58, currentNen: 33, ca: 15,
         attributes: { strength: -2, constitution: -2, intelligence: 0, charisma: -3, determination: 3, prestidigitation: 5 },
         attributeLabels: { strength: 'Força', constitution: 'Constituição', intelligence: 'Inteligência', charisma: 'Carisma', determination: 'Determinação', prestidigitation: 'Destreza' },
-        equippedWeapon: { name: 'Foice de Nen', damage: '1d10', description: 'Uma foice materializada que drena aura.', imageUrl: '' },
+        equippedWeapon: { name: 'Foice de Nen', damage: '1d10', description: 'Uma foice materializada que drena aura.', powers: 'Ao acertar um crítico, recupera 1d4 de Nen.', imageUrl: '' },
         skills: [
             { id: '1', name: 'Força de Pulso', category: 'Weapon', type: 'Active', cost: 2, costType: 'Nen', damageDice: '1d8', attributeScaling: 'determination', description: 'Golpeia o ar criando uma onda de choque.', imageUrl: 'https://i.pinimg.com/564x/4d/2e/77/4d2e77987823e595df5057a151859c2c.jpg' },
             { id: '2', name: 'Passo Sombrio', category: 'Combat', type: 'Bonus', cost: 0, costType: 'Nen', damageDice: '2d6', attributeScaling: 'prestidigitation', description: 'Movimentação silenciosa. Vantagem no ataque.', imageUrl: '' },
@@ -204,7 +235,9 @@
             { id: 'i3', name: "Licença Hunter", quantity: 1 }
         ],
         summons: [
-             { id: 's1', name: 'Guardião Sombrio', avatarUrl: 'https://i.pinimg.com/564x/0a/65/59/0a6559385b0451df6718d09794025171.jpg', type: 'Besta de Nen', currentHp: 20, maxHp: 20, currentNen: 10, maxNen: 10, attributes: { strength: 3, constitution: 2, intelligence: -2, charisma: -3, determination: 4, prestidigitation: 2 }, description: 'Um lobo feito de sombras.', skills: [] }
+             { id: 's1', name: 'Guardião Sombrio', avatarUrl: 'https://i.pinimg.com/564x/0a/65/59/0a6559385b0451df6718d09794025171.jpg', type: 'Besta de Nen', currentHp: 20, maxHp: 20, currentNen: 10, maxNen: 10, attributes: { strength: 3, constitution: 2, intelligence: -2, charisma: -3, determination: 4, prestidigitation: 2 }, description: 'Um lobo feito de sombras.', skills: [
+                 { id: 's1k1', name: 'Mordida Sombria', cost: 2, costType: 'Nen', damage: '1d6', description: 'Ataque rápido com as presas.' }
+             ] }
         ],
         conditions: []
       };
@@ -259,6 +292,15 @@
         const keys = ['strength', 'intelligence', 'charisma', 'determination', 'constitution', 'prestidigitation'];
         const displayLabels = labels || { strength: 'FOR', intelligence: 'INT', charisma: 'CAR', determination: 'DET', constitution: 'CON', prestidigitation: 'DES' };
         
+        const ATTR_ICONS = {
+            strength: Sword,
+            intelligence: Brain,
+            charisma: Feather,
+            determination: Dna,
+            constitution: Activity,
+            prestidigitation: Ghost
+        };
+
         const center = size / 2;
         const radius = size * 0.35; // slightly smaller to fit text
         const maxVal = 10; 
@@ -291,13 +333,25 @@
                      const angle = (Math.PI * 2 * i) / 6 - Math.PI / 2;
                      const x = center + Math.cos(angle) * radius;
                      const y = center + Math.sin(angle) * radius;
-                     const lx = center + Math.cos(angle) * (radius + 20);
-                     const ly = center + Math.sin(angle) * (radius + 20);
+                     
+                     // Push labels out further to accommodate icons
+                     const lx = center + Math.cos(angle) * (radius + 28);
+                     const ly = center + Math.sin(angle) * (radius + 28);
+                     
                      const labelText = displayLabels[k].substring(0, 3).toUpperCase();
+                     const Icon = ATTR_ICONS[k];
+
                      return (
                         <g key={i}>
                             <line x1={center} y1={center} x2={x} y2={y} stroke="rgba(255,255,255,0.1)" />
-                            <text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle" fill="#666" fontSize="8" className="font-tech font-bold">{labelText}</text>
+                            {/* Icon Wrapper */}
+                            <foreignObject x={lx - 10} y={ly - 20} width={20} height={20}>
+                                <div className="flex items-center justify-center w-full h-full text-gray-500">
+                                    <Icon size={14} />
+                                </div>
+                            </foreignObject>
+                            {/* Label Text */}
+                            <text x={lx} y={ly + 5} textAnchor="middle" dominantBaseline="middle" fill="#666" fontSize="8" className="font-tech font-bold">{labelText}</text>
                         </g>
                      )
                 })}
@@ -402,7 +456,14 @@
         }, []);
 
         useEffect(() => {
-            if (!loadedFromUrl) localStorage.setItem('hxh_chars', JSON.stringify(characters));
+            if (!loadedFromUrl) {
+                try {
+                    localStorage.setItem('hxh_chars', JSON.stringify(characters));
+                } catch(e) {
+                    console.error("Storage limit reached:", e);
+                    alert("Atenção: Limite de armazenamento local atingido! As alterações recentes podem não ser salvas. Tente remover imagens grandes ou personagens antigos.");
+                }
+            }
         }, [characters, loadedFromUrl]);
 
         useEffect(() => { logsEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [logs]);
@@ -431,7 +492,7 @@
         
         // Ensure default labels exist if old save data
         const attrLabels = char.attributeLabels || INITIAL_CHARACTER.attributeLabels;
-        const equippedWeapon = char.equippedWeapon || { name: 'Desarmado', damage: '1d4', description: 'Ataques básicos.', imageUrl: '' };
+        const equippedWeapon = char.equippedWeapon || { name: 'Desarmado', damage: '1d4', description: 'Ataques básicos.', powers: '', imageUrl: '' };
 
         const handleRollAttribute = (attrKey, value) => {
             if(isEditing) return;
@@ -447,10 +508,10 @@
             addLog(`Ataque: ${weapon.name}`, roll.total > 0 ? roll.total : '0', roll.str ? `[${roll.str}]: ${roll.rolls.join('+')}` : '', 'combat');
         };
 
-        const handleRollSkill = (skill) => {
+        const handleRollSkill = (skill, sourceName) => {
             if(isEditing) return;
-            const roll = rollDice(skill.damageDice);
-            addLog(`Uso: ${skill.name}`, roll.total > 0 ? roll.total : 'Ativado', roll.str ? `[${roll.str}]: ${roll.rolls.join('+')}` : 'Efeito ativado', 'combat');
+            const roll = rollDice(skill.damage || skill.damageDice);
+            addLog(`Uso: ${skill.name} (${sourceName || 'Habilidade'})`, roll.total > 0 ? roll.total : 'Ativado', roll.str ? `[${roll.str}]: ${roll.rolls.join('+')}` : 'Efeito ativado', 'combat');
             
             if(skill.cost > 0) {
                  const costType = skill.costType || 'Nen';
@@ -471,7 +532,7 @@
             }
         };
 
-        const addItem = (type) => {
+        const addItem = (type, parentId) => {
              if (type === 'skill') {
                 const category = activeTab === 'hatsus' ? 'Hatsu' : activeTab === 'combat' ? 'Combat' : 'Weapon';
                 const newSkill = { id: Math.random().toString(36), name: 'Nova Habilidade', category, type: 'Active', cost: 0, costType: 'Nen', damageDice: '1d6', description: 'Descrição...', imageUrl: '' };
@@ -484,10 +545,20 @@
                  const newSummon = { id: Math.random().toString(36), name: 'Nova Invocação', avatarUrl: '', type: 'Besta de Nen', currentHp: 10, maxHp: 10, currentNen: 5, maxNen: 5, attributes: { strength: 0, constitution: 0, intelligence: 0, charisma: 0, determination: 0, prestidigitation: 0 }, description: 'Descrição...', skills: [] };
                  handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, summons: [...c.summons, newSummon] } : c));
              }
+             if (type === 'summonSkill' && parentId) {
+                const newSummonSkill = { id: Math.random().toString(36), name: 'Nova Habilidade', cost: 1, costType: 'Nen', damage: '1d4', description: 'Efeito...' };
+                const newSummons = char.summons.map(s => s.id === parentId ? { ...s, skills: [...(s.skills || []), newSummonSkill] } : s);
+                handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, summons: newSummons } : c));
+             }
         }
         
-        const deleteItem = (collection, id) => {
-             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, [collection]: c[collection].filter(i => i.id !== id) } : c));
+        const deleteItem = (collection, id, parentId) => {
+             if (collection === 'summonSkill' && parentId) {
+                 const newSummons = char.summons.map(s => s.id === parentId ? { ...s, skills: s.skills.filter(k => k.id !== id) } : s);
+                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, summons: newSummons } : c));
+             } else {
+                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, [collection]: c[collection].filter(i => i.id !== id) } : c));
+             }
         }
 
         const copyLink = () => {
@@ -503,12 +574,12 @@
             fileInputRef.current?.click();
         }
 
-        const handleUpload = (e) => {
+        const handleUpload = async (e) => {
             const file = e.target.files?.[0];
             if(file && uploadTarget) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const res = reader.result;
+                try {
+                    const res = await resizeImage(file);
+                    
                     if (uploadTarget.type === 'avatar') {
                         updateChar('avatarUrl', res);
                     } else if (uploadTarget.type === 'skill' && uploadTarget.id) {
@@ -520,9 +591,14 @@
                     } else if (uploadTarget.type === 'equippedWeapon') {
                         updateChar('equippedWeapon', { ...(char.equippedWeapon || {}), imageUrl: res });
                     }
+                } catch (error) {
+                    console.error("Error processing image:", error);
+                    alert("Erro ao processar a imagem. Tente uma imagem menor.");
+                } finally {
                     setUploadTarget(null);
-                };
-                reader.readAsDataURL(file);
+                    // Reset input value to allow selecting the same file again if needed
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                }
             }
         }
 
@@ -542,7 +618,7 @@
                 <div className="fixed bottom-4 left-4 z-40 flex items-center gap-2 pointer-events-none select-none animate-fade-in">
                     <Monitor size={16} className="text-gray-600" />
                     <div className="text-[10px] font-tech text-gray-600 uppercase tracking-[0.2em] flex items-center gap-2">
-                        Schrodinger Corp. <span className="opacity-30">|</span> SYS.v4.8 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-blink"></span>
+                        Schrodinger Corp. <span className="opacity-30">|</span> SYS.v4.9 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-blink"></span>
                     </div>
                 </div>
 
@@ -713,8 +789,17 @@
                                                              )}
                                                              {isEditing && <input className="bg-red-900/30 border border-red-500/30 text-xs text-red-300 w-20 px-2 py-1 text-center" placeholder="Dano" value={equippedWeapon.damage} onChange={e => updateEquippedWeapon('damage', e.target.value)} />}
                                                         </div>
-                                                        <div className="mt-2 text-xs text-gray-400 font-serif leading-relaxed">
-                                                            {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-16 resize-none" value={equippedWeapon.description} onChange={e => updateEquippedWeapon('description', e.target.value)} placeholder="Descrição da arma..."/> : <p>{equippedWeapon.description}</p>}
+                                                        <div className="mt-2 text-xs text-gray-400 font-serif leading-relaxed grid gap-2">
+                                                            {/* Description */}
+                                                            <div>
+                                                                <span className="text-[9px] font-bold text-gray-500 uppercase">Visual & Lore</span>
+                                                                {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-16 resize-none mt-1 text-gray-300" value={equippedWeapon.description} onChange={e => updateEquippedWeapon('description', e.target.value)} placeholder="Descrição visual da arma..."/> : <p className="text-gray-300 mt-1">{equippedWeapon.description}</p>}
+                                                            </div>
+                                                            {/* Powers */}
+                                                            <div>
+                                                                <span className="text-[9px] font-bold text-gray-500 uppercase flex items-center gap-1"><Sparkles size={10}/> Poderes & Habilidades</span>
+                                                                {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-16 resize-none mt-1 text-blue-200" value={equippedWeapon.powers} onChange={e => updateEquippedWeapon('powers', e.target.value)} placeholder="Efeitos passivos, habilidades especiais..."/> : <p className="text-blue-200 mt-1 whitespace-pre-wrap">{equippedWeapon.powers || <span className="text-gray-600 italic">Nenhum poder especial.</span>}</p>}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                  </div>
@@ -872,7 +957,7 @@
                                                 </div>
                                                 
                                                 {/* Stats & Radar Row */}
-                                                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/30">
+                                                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/30 border-b border-white/5">
                                                     <div className="flex flex-col justify-center">
                                                         <StatBar label="HP" current={summon.currentHp} max={summon.maxHp} color="#ef4444" icon={<Heart size={10}/>} isEditing={isEditing}
                                                             onChange={v => {
@@ -915,6 +1000,68 @@
                                                         )}
                                                     </div>
                                                 </div>
+
+                                                {/* Summon Skills Section */}
+                                                <div className="p-4 bg-[#111]">
+                                                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 border-b border-white/10 pb-1 flex justify-between items-center">
+                                                        <span>Habilidades da Invocação</span>
+                                                        {isEditing && <button onClick={() => addItem('summonSkill', summon.id)} className="text-theme hover:text-white flex items-center gap-1"><Plus size={10}/> Add</button>}
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {(!summon.skills || summon.skills.length === 0) && <div className="text-xs text-gray-600 italic text-center py-2">Sem habilidades.</div>}
+                                                        {(summon.skills || []).map(skill => (
+                                                            <div key={skill.id} className="bg-black/40 border border-white/5 p-2 rounded flex flex-col gap-1">
+                                                                <div className="flex justify-between items-center">
+                                                                    <div className="flex items-center gap-2 flex-1">
+                                                                        {isEditing ? <input value={skill.name} onChange={e => {
+                                                                            const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, name: e.target.value} : s);
+                                                                            const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
+                                                                            handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
+                                                                        }} className="bg-transparent border-b border-white/20 text-xs font-bold text-white w-full"/> : <span className="text-xs font-bold text-white cursor-pointer hover:text-theme" onClick={() => handleRollSkill(skill, summon.name)}>{skill.name}</span>}
+                                                                    </div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        {isEditing ? (
+                                                                             <div className="flex items-center gap-1">
+                                                                                <input type="number" value={skill.cost} onChange={e => {
+                                                                                    const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, cost: parseInt(e.target.value)} : s);
+                                                                                    const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
+                                                                                    handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
+                                                                                }} className="w-6 text-[10px] bg-white/10 text-center"/>
+                                                                                 <select value={skill.costType || 'Nen'} onChange={e => {
+                                                                                    const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, costType: e.target.value} : s);
+                                                                                    const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
+                                                                                    handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
+                                                                                }} className="text-[10px] bg-black text-gray-400">
+                                                                                    <option value="Nen">AP</option>
+                                                                                    <option value="HP">HP</option>
+                                                                                </select>
+                                                                             </div>
+                                                                        ) : (
+                                                                            skill.cost > 0 && <span className={`text-[9px] font-mono px-1 rounded ${skill.costType === 'HP' ? 'text-red-400 bg-red-900/20' : 'text-blue-400 bg-blue-900/20'}`}>{skill.cost} {skill.costType === 'HP' ? 'HP' : 'AP'}</span>
+                                                                        )}
+                                                                        
+                                                                        {isEditing ? <input value={skill.damage} onChange={e => {
+                                                                            const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, damage: e.target.value} : s);
+                                                                            const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
+                                                                            handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
+                                                                        }} className="w-10 text-[10px] bg-red-900/30 text-red-200 text-center" placeholder="Dano"/> : 
+                                                                        (skill.damage && <button onClick={() => handleRollSkill(skill, summon.name)} className="text-[9px] text-red-300 flex items-center gap-1 hover:bg-white/5 px-1 rounded"><Dice5 size={8}/> {skill.damage}</button>)}
+
+                                                                        {isEditing && <button onClick={() => deleteItem('summonSkill', skill.id, summon.id)} className="text-gray-600 hover:text-red-500"><Trash2 size={12}/></button>}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-[10px] text-gray-400 border-l-2 border-white/10 pl-2">
+                                                                     {isEditing ? <textarea value={skill.description} onChange={e => {
+                                                                        const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, description: e.target.value} : s);
+                                                                        const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
+                                                                        handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
+                                                                    }} className="w-full bg-transparent text-gray-400 resize-none h-8"/> : skill.description}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         ))}
                                         {isEditing && <button onClick={() => addItem('summon')} className="w-full py-3 border border-dashed border-white/10 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">+ Adicionar Invocação</button>}
