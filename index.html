@@ -2,8 +2,13 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HxH RPG Sheet (Standalone)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Hunter Database | HxH RPG</title>
+    
+    <!-- SEO & Icons -->
+    <meta name="description" content="Ficha de RPG Hunter x Hunter interativa. Gerencie atributos, Nen, invocações e inventário com cálculos automáticos.">
+    <meta name="theme-color" content="#050506">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -129,14 +134,24 @@
 
     <!-- MAIN APPLICATION SCRIPT -->
     <script type="text/babel" data-presets="react, typescript" data-type="module">
-      import React, { useState, useRef, useEffect } from 'https://esm.sh/react@18.2.0';
+      import React, { useState, useRef, useEffect, useCallback } from 'https://esm.sh/react@18.2.0';
       import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
       import { 
         Shield, Zap, Heart, Sword, Brain, Activity, Ghost, Feather, Dna, 
         Dice5, Trash2, Droplet, Edit3, Save, Plus, X, Camera, ScrollText, BookOpen, Upload, PawPrint,
         Moon, Sun, Flame, Minus, PlusCircle, Image as ImageIcon, Target, Star, Gift, FlaskConical, Box,
-        Users, UserPlus, Check, LayoutGrid, Edit2
+        Users, UserPlus, Check, LayoutGrid, Edit2, Download, Wifi, WifiOff, Share2, Copy, Link
       } from 'https://esm.sh/lucide-react@0.294.0';
+
+      // --- UTILS FOR URL SHARING ---
+      // Simple base64 encode/decode for UTF-8 strings
+      const utf8_to_b64 = (str) => {
+        return window.btoa(unescape(encodeURIComponent(str)));
+      }
+
+      const b64_to_utf8 = (str) => {
+        return decodeURIComponent(escape(window.atob(str)));
+      }
 
       // --- TYPES & CONSTANTS (Merged) ---
 
@@ -559,24 +574,101 @@
       };
 
       const App = () => {
-        // --- STATE ---
+        // --- STATE & ROOM MANAGEMENT ---
+        const [showShareModal, setShowShareModal] = useState(false);
+        const [loadedFromUrl, setLoadedFromUrl] = useState(false);
+
         // Character Management
-        // Init from local storage if available, else initial
+        // Load Priority: URL Param -> Local Storage -> Initial
         const [characters, setCharacters] = useState(() => {
+             // 1. Try URL Param (State Sharing)
+             try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedData = urlParams.get('data');
+                if (sharedData) {
+                    const parsed = JSON.parse(b64_to_utf8(sharedData));
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed;
+                    }
+                }
+             } catch(e) { console.error("Invalid Shared Data", e); }
+
+             // 2. Try LocalStorage
              try {
                 const saved = localStorage.getItem('hxh_chars');
                 if (saved) return JSON.parse(saved);
              } catch(e) {}
+             
+             // 3. Fallback
              return [INITIAL_CHARACTER];
         });
+
+        useEffect(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('data')) {
+                setLoadedFromUrl(true);
+                // Optional: Clean URL after loading to avoid sticking to old state on refresh
+                // window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, []);
 
         const [activeCharId, setActiveCharId] = useState(() => characters[0]?.id || 'char_default');
         const [isCharModalOpen, setIsCharModalOpen] = useState(false);
 
-        // Save to local storage whenever characters change
+        // --- PERSISTENCE LOGIC ---
+        // Save to LocalStorage whenever state changes (unless purely viewing shared)
         useEffect(() => {
-            localStorage.setItem('hxh_chars', JSON.stringify(characters));
-        }, [characters]);
+            if (!loadedFromUrl) {
+                localStorage.setItem('hxh_chars', JSON.stringify(characters));
+            }
+        }, [characters, loadedFromUrl]);
+
+        // If user edits a shared sheet, we switch mode to "Local" so it saves to their browser
+        const handleStateUpdate = (newCharsFn) => {
+            if (loadedFromUrl) {
+                if(confirm("Você está editando uma ficha compartilhada. Isso salvará uma cópia no seu navegador.")) {
+                    setLoadedFromUrl(false);
+                    // clear url param
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } else {
+                    return; // Cancel edit
+                }
+            }
+            
+            setCharacters(prev => {
+                const newVal = typeof newCharsFn === 'function' ? newCharsFn(prev) : newCharsFn;
+                return newVal;
+            });
+        };
+
+        const updateChar = (field, value) => {
+            handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, [field]: value } : c));
+        };
+
+        const getShareLink = () => {
+            try {
+                const jsonStr = JSON.stringify(characters);
+                const b64 = utf8_to_b64(jsonStr);
+                const url = `${window.location.origin}${window.location.pathname}?data=${b64}`;
+                
+                if (url.length > 8000) {
+                    alert("Atenção: Seus dados são muito grandes (provavelmente imagens enviadas por upload). O link pode não funcionar em alguns navegadores. Tente usar URLs de imagens externas.");
+                }
+                return url;
+            } catch (e) {
+                alert("Erro ao gerar link.");
+                return "";
+            }
+        };
+
+        const copyLink = () => {
+            const url = getShareLink();
+            if(url) {
+                navigator.clipboard.writeText(url);
+                alert("Link copiado! Envie para quem quiser.");
+                setShowShareModal(false);
+            }
+        };
 
         // Derived Active Character
         const char = characters.find(c => c.id === activeCharId) || characters[0];
@@ -623,6 +715,46 @@
 
         // --- ACTIONS ---
 
+        const handleExportData = () => {
+            const dataStr = JSON.stringify(characters, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `hunter_data_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            addLog("Dados exportados com sucesso.", 'info');
+        };
+
+        const handleImportData = (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const parsed = JSON.parse(event.target.result);
+                    if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id) {
+                        if(confirm("Isso substituirá todos os seus personagens atuais. Deseja continuar?")) {
+                            setCharacters(parsed); // Local import doesn't trigger 'edit shared' check, just overwrites
+                            setActiveCharId(parsed[0].id);
+                            setLoadedFromUrl(false); // Reset url mode on import
+                            addLog("Dados importados com sucesso.", 'info');
+                            setIsCharModalOpen(false);
+                        }
+                    } else {
+                        alert("Arquivo inválido. Certifique-se de que é um backup do Hunter RPG.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo.");
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = ''; // Reset
+        };
+
         const handleSwitchChar = (id) => {
             setActiveCharId(id);
             setIsCharModalOpen(false);
@@ -651,7 +783,7 @@
                 currentNen: 10,
                 bio: ""
             };
-            setCharacters(prev => [...prev, newChar]);
+            handleStateUpdate(prev => [...prev, newChar]);
             setActiveCharId(newId);
             setIsCharModalOpen(false);
             addLog("Novo personagem criado.", 'info');
@@ -665,7 +797,7 @@
             }
             if (confirm("Tem certeza que deseja excluir este personagem permanentemente?")) {
                 const newChars = characters.filter(c => c.id !== id);
-                setCharacters(newChars);
+                handleStateUpdate(newChars);
                 if (activeCharId === id) {
                     setActiveCharId(newChars[0].id);
                 }
@@ -681,18 +813,14 @@
             }]);
         };
 
-        const updateChar = (field, value) => {
-            setCharacters(prev => prev.map(c => c.id === activeCharId ? { ...c, [field]: value } : c));
-        };
-
         const updateAttribute = (attr, val) => {
-            setCharacters(prev => prev.map(c => 
+            handleStateUpdate(prev => prev.map(c => 
                 c.id === activeCharId ? { ...c, attributes: { ...c.attributes, [attr]: val } } : c
             ));
         };
 
         const updateSummonStat = (id, field, val) => {
-            setCharacters(prev => prev.map(c => {
+            handleStateUpdate(prev => prev.map(c => {
                 if (c.id === activeCharId) {
                     return {
                         ...c,
@@ -761,16 +889,16 @@
         };
 
         const setCharInventory = (fn) => {
-            setCharacters(prev => prev.map(c => c.id === activeCharId ? { ...c, inventory: typeof fn === 'function' ? fn(c.inventory) : fn } : c));
+            handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, inventory: typeof fn === 'function' ? fn(c.inventory) : fn } : c));
         }
         const setCharConditions = (fn) => {
-            setCharacters(prev => prev.map(c => c.id === activeCharId ? { ...c, conditions: typeof fn === 'function' ? fn(c.conditions) : fn } : c));
+            handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, conditions: typeof fn === 'function' ? fn(c.conditions) : fn } : c));
         }
         const setCharSkills = (fn) => {
-            setCharacters(prev => prev.map(c => c.id === activeCharId ? { ...c, skills: typeof fn === 'function' ? fn(c.skills) : fn } : c));
+            handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, skills: typeof fn === 'function' ? fn(c.skills) : fn } : c));
         }
         const setCharSummons = (fn) => {
-            setCharacters(prev => prev.map(c => c.id === activeCharId ? { ...c, summons: typeof fn === 'function' ? fn(c.summons) : fn } : c));
+            handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, summons: typeof fn === 'function' ? fn(c.summons) : fn } : c));
         }
 
         // Skill Management
@@ -1070,37 +1198,76 @@
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
 
             {/* Navbar */}
-            <div className="sticky top-0 z-50 bg-[#050506]/80 backdrop-blur-xl border-b border-white/5 px-4 md:px-8 py-4 flex justify-between items-center shadow-lg">
+            <div className="sticky top-0 z-50 bg-[#050506]/80 backdrop-blur-xl border-b border-white/5 px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center shadow-lg gap-4">
                 <div className="font-title text-xl md:text-2xl text-white tracking-widest flex items-center gap-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white" style={{ backgroundImage: `linear-gradient(to right, ${themeColor}, #fff)` }}>HUNTER</span> 
-                <span className="text-gray-500 font-sans text-lg font-light">×</span> 
-                <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to left, ${themeColor}, #fff)` }}>HUNTER</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white" style={{ backgroundImage: `linear-gradient(to right, ${themeColor}, #fff)` }}>HUNTER</span> 
+                    <span className="text-gray-500 font-sans text-lg font-light">×</span> 
+                    <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to left, ${themeColor}, #fff)` }}>HUNTER</span>
+                    
+                    {/* Status Indicator */}
+                    <div className="ml-4 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/40 border border-white/5 text-[10px] font-bold uppercase tracking-widest">
+                        {loadedFromUrl ? (
+                            <><span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_5px_rgba(59,130,246,0.8)]"></span> <span className="text-blue-400">Modo Leitura (Link)</span></>
+                        ) : (
+                            <><span className="w-2 h-2 rounded-full bg-green-500"></span> <span className="text-gray-500">Local (Salvo)</span></>
+                        )}
+                    </div>
                 </div>
                 
-                <div className="flex gap-3">
-                <button 
-                    onClick={() => setIsCharModalOpen(true)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all font-header text-sm tracking-wide mr-2"
-                >
-                    <Users size={16} /> <span className="hidden md:inline">DATABASE</span>
-                </button>
+                <div className="flex flex-wrap justify-center gap-3">
+                    <button 
+                        onClick={() => setShowShareModal(true)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 hover:text-white hover:bg-blue-500 hover:border-blue-400 transition-all font-header text-sm tracking-wide shadow-[0_0_10px_rgba(59,130,246,0.1)]"
+                    >
+                        <Share2 size={16} /> <span className="hidden md:inline">Compartilhar Link</span>
+                    </button>
 
-                {!isEditing && (
-                    <div className="flex items-center gap-2 mr-4 border-r border-white/10 pr-4">
-                    <button onClick={() => handleRest('short')} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"><Moon size={18} /></button>
-                    <button onClick={() => handleRest('long')} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-yellow-300 transition-all"><Sun size={18} /></button>
-                    </div>
-                )}
-                <button 
-                    onClick={() => setIsEditing(!isEditing)}
-                    className={`flex items-center gap-2 px-5 py-2 rounded-full font-bold text-sm transition-all duration-300 border backdrop-blur-md ${
-                    isEditing ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]' : 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:text-white hover:border-white/30'
-                    }`}
-                >
-                    {isEditing ? <><Save size={16} /> SALVAR</> : <><Edit3 size={16} /> EDITAR</>}
-                </button>
+                    <button 
+                        onClick={() => setIsCharModalOpen(true)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all font-header text-sm tracking-wide mr-2"
+                    >
+                        <Users size={16} /> <span className="hidden md:inline">DATABASE</span>
+                    </button>
+
+                    {!isEditing && (
+                        <div className="flex items-center gap-2 mr-4 border-r border-white/10 pr-4">
+                        <button onClick={() => handleRest('short')} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"><Moon size={18} /></button>
+                        <button onClick={() => handleRest('long')} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-yellow-300 transition-all"><Sun size={18} /></button>
+                        </div>
+                    )}
+                    <button 
+                        onClick={() => setIsEditing(!isEditing)}
+                        className={`flex items-center gap-2 px-5 py-2 rounded-full font-bold text-sm transition-all duration-300 border backdrop-blur-md ${
+                        isEditing ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.5)]' : 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:text-white hover:border-white/30'
+                        }`}
+                    >
+                        {isEditing ? <><Save size={16} /> SALVAR</> : <><Edit3 size={16} /> EDITAR</>}
+                    </button>
                 </div>
             </div>
+
+            {/* Share Modal */}
+            {showShareModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+                    <div className="glass-panel bg-[#131316] w-full max-w-md rounded-2xl shadow-2xl p-6 text-center border border-theme/50">
+                        <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-400">
+                            <Link size={32} />
+                        </div>
+                        <h3 className="text-2xl font-title text-white mb-2">Compartilhar Ficha</h3>
+                        <p className="text-gray-400 text-sm mb-6">Este link contém todos os dados da sua ficha atual. Envie para alguém e eles verão exatamente o que você vê.</p>
+                        
+                        <div className="bg-black/50 p-3 rounded-lg border border-white/10 flex items-center justify-between mb-2">
+                            <span className="text-xs text-gray-500 italic w-full text-left">O link foi gerado e está pronto para copiar.</span>
+                            <button onClick={copyLink} className="p-2 bg-blue-500 hover:bg-blue-600 rounded text-white transition-colors flex items-center gap-2 text-sm font-bold px-4">
+                                <Copy size={16}/> Copiar Link
+                            </button>
+                        </div>
+                        <p className="text-[10px] text-red-400 mt-2 mb-4">* Cuidado: Se você usou imagens por upload (do seu PC), o link pode ficar muito grande e não funcionar. Prefira usar URLs de imagens da internet.</p>
+                        
+                        <button onClick={() => setShowShareModal(false)} className="text-sm text-gray-500 hover:text-white underline">Fechar</button>
+                    </div>
+                </div>
+            )}
 
             {/* Main Content */}
             <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
@@ -1462,7 +1629,18 @@
                     <div className="w-full max-w-5xl h-[80vh] flex flex-col">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-3xl font-title text-white tracking-widest flex items-center gap-3"><Users size={32}/> HUNTER DATABASE</h2>
-                            <button onClick={() => setIsCharModalOpen(false)} className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"><X size={24}/></button>
+                            <div className="flex gap-2">
+                                {/* Export Button */}
+                                <button onClick={handleExportData} title="Salvar Backup (JSON)" className="p-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white border border-blue-500/50 rounded-lg transition-all flex items-center gap-2 px-3">
+                                    <Download size={20} /> <span className="text-sm font-bold uppercase tracking-wide hidden sm:inline">Backup</span>
+                                </button>
+                                {/* Import Button */}
+                                <label title="Carregar Backup (JSON)" className="p-2 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white border border-green-500/50 rounded-lg transition-all cursor-pointer flex items-center gap-2 px-3">
+                                    <Upload size={20} /> <span className="text-sm font-bold uppercase tracking-wide hidden sm:inline">Carregar</span>
+                                    <input type="file" className="hidden" accept=".json" onChange={handleImportData} />
+                                </label>
+                                <button onClick={() => setIsCharModalOpen(false)} className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors ml-4"><X size={24}/></button>
+                            </div>
                         </div>
                         
                         <div className="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2">
