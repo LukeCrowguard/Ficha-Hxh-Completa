@@ -965,13 +965,13 @@
                                     {id: 'inventory', label: 'Inventário', icon: Box},
                                     {id: 'bio', label: 'Bio', icon: ScrollText}
                                 ].map(tab => (
-                                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2 ${activeTab === tab.id ? 'text-white border-theme bg-white/5' : 'text-gray-500 border-transparent hover:text-gray-300'}`}>
+                                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2 whitespace-nowrap ${activeTab === tab.id ? 'text-white border-theme bg-white/5' : 'text-gray-500 border-transparent hover:text-gray-300'}`}>
                                         <tab.icon size={14} /> {tab.label}
                                     </button>
                                 ))}
                             </div>
 
-                            <div className="p-6 flex-1 bg-gradient-to-b from-transparent to-black/20 overflow-y-auto">
+                            <div className="p-6 flex-1 bg-gradient-to-b from-transparent to-black/20 overflow-y-auto pb-44">
                                 {/* Skills Logic */}
                                 {['hatsus', 'combat', 'weapon'].includes(activeTab) && (
                                     <div className="space-y-4">
@@ -1135,6 +1135,16 @@
                                 {/* Summons */}
                                 {activeTab === 'summons' && (
                                     <div className="grid grid-cols-1 gap-6">
+                                        
+                                        {isEditing && (
+                                            <button 
+                                                onClick={() => addItem('summon')} 
+                                                className="w-full py-4 mb-4 border border-dashed border-theme/50 text-theme bg-theme/5 hover:bg-theme/10 rounded font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
+                                            >
+                                                <Plus size={16} /> Adicionar Nova Invocação
+                                            </button>
+                                        )}
+
                                         {char.summons.map(summon => (
                                             <div key={summon.id} className="tech-border bg-black/20 overflow-hidden group">
                                                 {/* Header / Avatar Row */}
