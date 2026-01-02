@@ -134,7 +134,8 @@
         Shield, Zap, Heart, Sword, Brain, Activity, Ghost, Feather, Dna, 
         Dice5, Trash2, Edit3, Save, Plus, X, Camera, ScrollText, Box,
         Users, Upload, Share2, Copy, Hexagon,
-        Monitor, Target, PawPrint, Terminal, ChevronRight, ImageIcon, BatteryCharging, Sparkles
+        Monitor, Target, PawPrint, Terminal, ChevronRight, ImageIcon, BatteryCharging, Sparkles,
+        AlertCircle, Calculator
       } from 'https://esm.sh/lucide-react@0.294.0';
 
       const utf8_to_b64 = (str) => window.btoa(unescape(encodeURIComponent(str)));
@@ -225,9 +226,9 @@
         attributeLabels: { strength: 'Força', constitution: 'Constituição', intelligence: 'Inteligência', charisma: 'Carisma', determination: 'Determinação', prestidigitation: 'Destreza' },
         equippedWeapon: { name: 'Foice de Nen', damage: '1d10', description: 'Uma foice materializada que drena aura.', powers: 'Ao acertar um crítico, recupera 1d4 de Nen.', imageUrl: '' },
         skills: [
-            { id: '1', name: 'Força de Pulso', category: 'Weapon', type: 'Active', cost: 2, costType: 'Nen', damageDice: '1d8', attributeScaling: 'determination', description: 'Golpeia o ar criando uma onda de choque.', imageUrl: 'https://i.pinimg.com/564x/4d/2e/77/4d2e77987823e595df5057a151859c2c.jpg' },
-            { id: '2', name: 'Passo Sombrio', category: 'Combat', type: 'Bonus', cost: 0, costType: 'Nen', damageDice: '2d6', attributeScaling: 'prestidigitation', description: 'Movimentação silenciosa. Vantagem no ataque.', imageUrl: '' },
-            { id: '3', name: 'Sacrifício de Sangue', category: 'Hatsu', type: 'Active', cost: 5, costType: 'HP', damageDice: '3d6', attributeScaling: '', description: 'Sacrifica vitalidade para causar dano massivo.', imageUrl: '' },
+            { id: '1', name: 'Força de Pulso', category: 'Weapon', type: 'Ativa', cost: 2, costType: 'Nen', damageDice: '1d8', attributeScaling: 'determination', description: 'Golpeia o ar criando uma onda de choque.', imageUrl: 'https://i.pinimg.com/564x/4d/2e/77/4d2e77987823e595df5057a151859c2c.jpg' },
+            { id: '2', name: 'Passo Sombrio', category: 'Combat', type: 'Bônus', cost: 0, costType: 'Nen', damageDice: '2d6', attributeScaling: 'prestidigitation', description: 'Movimentação silenciosa. Vantagem no ataque.', imageUrl: '' },
+            { id: '3', name: 'Sacrifício de Sangue', category: 'Hatsu', type: 'Ativa', cost: 5, costType: 'HP', damageDice: '3d6', attributeScaling: '', description: 'Sacrifica vitalidade para causar dano massivo.', imageUrl: '' },
         ],
         inventory: [
             { id: 'i1', name: "Espada Curta", quantity: 1 },
@@ -239,12 +240,12 @@
                  { id: 's1k1', name: 'Mordida Sombria', cost: 2, costType: 'Nen', damage: '1d6', description: 'Ataque rápido com as presas.' }
              ] }
         ],
-        conditions: []
+        conditions: ['Ren', 'Furtividade']
       };
 
       // --- COMPONENTS ---
 
-      const StatBar = ({ label, current, max, color, icon, isEditing, onChange, onMaxChange }) => {
+      const StatBar = ({ label, current, max, color, icon, isEditing, onChange, onMaxChange, onOpenCalculator }) => {
         const percentage = Math.min(100, Math.max(0, (current / max) * 100));
         return (
             <div className="flex flex-col w-full mb-3 group relative">
@@ -254,6 +255,14 @@
                 <span className="text-gray-200">{label}</span>
                 </div>
                 <div className="flex items-center text-md font-bold font-mono">
+                
+                {/* Calculator Button Trigger */}
+                {!isEditing && (
+                    <button onClick={onOpenCalculator} className="mr-2 text-gray-500 hover:text-white transition-colors opacity-50 hover:opacity-100" title="Calculadora de Dano/Cura">
+                        <Calculator size={14} />
+                    </button>
+                )}
+
                 <input type="number" value={current} onChange={(e) => onChange && onChange(parseInt(e.target.value) || 0)} className="w-12 bg-transparent text-right outline-none border-b border-transparent hover:border-white/50 focus:border-white text-white font-bold" />
                 <span className="mx-1 text-gray-500">/</span>
                 {isEditing ? <input type="number" value={max} onChange={(e) => onMaxChange && onMaxChange(parseInt(e.target.value) || 0)} className="w-12 bg-white/10 rounded px-1 text-center outline-none border border-white/20 text-white"/> : <span className="text-gray-400 w-12 text-center">{max}</span>}
@@ -265,6 +274,90 @@
             </div>
             </div>
         );
+      };
+
+      const CalculatorModal = ({ isOpen, onClose, target, onConfirm }) => {
+          const [value, setValue] = useState('');
+          
+          useEffect(() => {
+              if (isOpen) setValue('');
+          }, [isOpen]);
+
+          if (!isOpen || !target) return null;
+
+          const handleApply = (type) => {
+              const numVal = parseInt(value) || 0;
+              if (numVal === 0) return;
+              // If type is 'sub' (damage/spend), we pass negative, else positive
+              const delta = type === 'sub' ? -numVal : numVal;
+              onConfirm(delta);
+              onClose();
+          };
+
+          const isHp = target.field.toLowerCase().includes('hp');
+          const color = isHp ? '#ef4444' : '#9b59b6'; // Red for HP, Theme/Purple for Nen (default)
+          
+          return (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur p-4 animate-fade-in">
+                <div className="glass-panel w-full max-w-xs p-6 tech-border relative flex flex-col items-center">
+                    <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-white p-2"><X size={20}/></button>
+                    
+                    <h3 className="text-sm font-tech text-gray-400 uppercase tracking-widest mb-1">{target.label}</h3>
+                    <div className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                        <span>{target.current}</span>
+                        <span className="text-gray-600">/</span>
+                        <span className="text-gray-500">{target.max}</span>
+                    </div>
+
+                    <div className="w-full bg-black/40 border border-white/10 p-2 mb-4 flex items-center justify-center">
+                         <input 
+                            type="number" 
+                            autoFocus
+                            placeholder="0"
+                            className="bg-transparent text-center text-4xl font-mono text-white outline-none w-full"
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleApply('sub');
+                            }}
+                         />
+                    </div>
+
+                    {/* Quick Buttons */}
+                    <div className="flex gap-2 mb-4 w-full justify-center">
+                        {[1, 5, 10].map(v => (
+                            <button key={v} onClick={() => setValue(v)} className="bg-white/5 hover:bg-white/20 border border-white/10 text-xs font-mono py-1 px-3 rounded text-gray-300">
+                                {v}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-3 w-full">
+                        <button 
+                            onClick={() => handleApply('sub')} 
+                            className={`py-3 ${isHp ? 'bg-red-900/40 hover:bg-red-800/60 border-red-500/30 text-red-200' : 'bg-orange-900/40 hover:bg-orange-800/60 border-orange-500/30 text-orange-200'} border rounded font-bold uppercase text-xs tracking-wider transition-all active:scale-95`}
+                        >
+                            {isHp ? 'Dano (-)' : 'Gastar (-)'}
+                        </button>
+                        <button 
+                            onClick={() => handleApply('add')} 
+                            className={`py-3 ${isHp ? 'bg-green-900/40 hover:bg-green-800/60 border-green-500/30 text-green-200' : 'bg-blue-900/40 hover:bg-blue-800/60 border-blue-500/30 text-blue-200'} border rounded font-bold uppercase text-xs tracking-wider transition-all active:scale-95`}
+                        >
+                            {isHp ? 'Curar (+)' : 'Recuperar (+)'}
+                        </button>
+                    </div>
+
+                    {/* Preview */}
+                    {value && (
+                        <div className="mt-3 text-[10px] font-mono text-gray-500 flex justify-between w-full px-1">
+                            <span>Res: {Math.max(0, target.current - (parseInt(value)||0))}</span>
+                            <span>Res: {Math.min(target.max, target.current + (parseInt(value)||0))}</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+          );
       };
 
       const AttributeCard = ({ label, value, icon: Icon, color, isEditing, onRoll, onChange, onLabelChange }) => {
@@ -447,6 +540,9 @@
         const [isEditing, setIsEditing] = useState(false);
         const [activeTab, setActiveTab] = useState('hatsus');
         const [uploadTarget, setUploadTarget] = useState(null); 
+        const [conditionInput, setConditionInput] = useState("");
+        const [calculatorTarget, setCalculatorTarget] = useState(null); // { type: 'char'|'summon', id: string, field: 'currentHp'|'currentNen', label: 'HP', current: 10, max: 20 }
+        
         const fileInputRef = useRef(null);
         const logsEndRef = useRef(null);
 
@@ -502,6 +598,11 @@
             addLog(`Teste de ${label}`, total, `[d20: ${d20}] ${value >= 0 ? '+' : ''}${value}`, total >= 20 ? 'crit' : total <= 1 ? 'fail' : 'info');
         };
 
+        const handleRollGeneric = (sides) => {
+             const result = Math.floor(Math.random() * sides) + 1;
+             addLog(`Rolagem d${sides}`, result, `Dado de ${sides} lados`, result === sides ? 'crit' : result === 1 ? 'fail' : 'info');
+        }
+
         const handleRollWeapon = (weapon) => {
             if(isEditing) return;
             const roll = rollDice(weapon.damage);
@@ -532,10 +633,51 @@
             }
         };
 
+        // Calculator Logic
+        const handleOpenCalculator = (type, id, field, label, current, max) => {
+             setCalculatorTarget({ type, id, field, label, current, max });
+        };
+
+        const handleApplyCalculation = (delta) => {
+            if (!calculatorTarget) return;
+            const { type, id, field, current, max, label } = calculatorTarget;
+            
+            let newValue = current + delta;
+            // Clamp value between 0 and Max
+            newValue = Math.max(0, Math.min(max, newValue));
+            
+            // Log logic
+            const isGain = delta > 0;
+            const logType = field.toLowerCase().includes('hp') ? (isGain ? 'info' : 'fail') : 'info';
+            const logLabel = isGain ? (field.includes('Hp') ? 'Curado' : 'Recuperado') : (field.includes('Hp') ? 'Dano' : 'Gasto');
+            
+            addLog(`Calculadora: ${label}`, `${newValue}`, `${logLabel}: ${Math.abs(delta)} (Antes: ${current})`, logType);
+
+            if (type === 'char') {
+                updateChar(field, newValue);
+            } else if (type === 'summon') {
+                 const newSummons = char.summons.map(s => s.id === id ? {...s, [field]: newValue} : s);
+                 updateChar('summons', newSummons);
+            }
+        };
+
+
+        const addCondition = () => {
+             if (!conditionInput.trim()) return;
+             const newConditions = [...(char.conditions || []), conditionInput.trim()];
+             updateChar('conditions', newConditions);
+             setConditionInput("");
+        }
+
+        const removeCondition = (idx) => {
+             const newConditions = (char.conditions || []).filter((_, i) => i !== idx);
+             updateChar('conditions', newConditions);
+        }
+
         const addItem = (type, parentId) => {
              if (type === 'skill') {
                 const category = activeTab === 'hatsus' ? 'Hatsu' : activeTab === 'combat' ? 'Combat' : 'Weapon';
-                const newSkill = { id: Math.random().toString(36), name: 'Nova Habilidade', category, type: 'Active', cost: 0, costType: 'Nen', damageDice: '1d6', description: 'Descrição...', imageUrl: '' };
+                const newSkill = { id: Math.random().toString(36), name: 'Nova Habilidade', category, type: 'Ativa', cost: 0, costType: 'Nen', damageDice: '1d6', description: 'Descrição...', imageUrl: '' };
                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, skills: [...c.skills, newSkill] } : c));
              }
              if (type === 'item') {
@@ -553,11 +695,13 @@
         }
         
         const deleteItem = (collection, id, parentId) => {
-             if (collection === 'summonSkill' && parentId) {
-                 const newSummons = char.summons.map(s => s.id === parentId ? { ...s, skills: s.skills.filter(k => k.id !== id) } : s);
-                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, summons: newSummons } : c));
-             } else {
-                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, [collection]: c[collection].filter(i => i.id !== id) } : c));
+             if(confirm("Tem certeza que deseja excluir?")) {
+                if (collection === 'summonSkill' && parentId) {
+                    const newSummons = char.summons.map(s => s.id === parentId ? { ...s, skills: s.skills.filter(k => k.id !== id) } : s);
+                    handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, summons: newSummons } : c));
+                } else {
+                    handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? { ...c, [collection]: c[collection].filter(i => i.id !== id) } : c));
+                }
              }
         }
 
@@ -657,6 +801,14 @@
                     </div>
                 )}
 
+                {/* Calculator Modal */}
+                <CalculatorModal 
+                    isOpen={!!calculatorTarget} 
+                    target={calculatorTarget} 
+                    onClose={() => setCalculatorTarget(null)} 
+                    onConfirm={handleApplyCalculation} 
+                />
+
                 {/* Main Content */}
                 <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
@@ -714,11 +866,42 @@
                             {/* Stats Column */}
                             <div className="flex flex-col gap-6">
                                 <div className="glass-panel p-5 tech-border flex flex-col justify-center gap-4">
-                                    <StatBar label="Pontos de Vida (HP)" current={char.currentHp} max={char.maxHp} color="#ef4444" icon={<Heart size={12}/>} isEditing={isEditing} onChange={v => updateChar('currentHp', v)} onMaxChange={v => updateChar('maxHp', v)} />
-                                    <StatBar label="Pontos de Aura (Nen)" current={char.currentNen} max={char.maxNen} color={themeColor} icon={<Zap size={12}/>} isEditing={isEditing} onChange={v => updateChar('currentNen', v)} onMaxChange={v => updateChar('maxNen', v)} />
+                                    <StatBar label="Pontos de Vida (HP)" current={char.currentHp} max={char.maxHp} color="#ef4444" icon={<Heart size={12}/>} isEditing={isEditing} 
+                                        onChange={v => updateChar('currentHp', v)} 
+                                        onMaxChange={v => updateChar('maxHp', v)}
+                                        onOpenCalculator={() => handleOpenCalculator('char', char.id, 'currentHp', 'Pontos de Vida', char.currentHp, char.maxHp)}
+                                    />
+                                    <StatBar label="Pontos de Aura (Nen)" current={char.currentNen} max={char.maxNen} color={themeColor} icon={<Zap size={12}/>} isEditing={isEditing} 
+                                        onChange={v => updateChar('currentNen', v)} 
+                                        onMaxChange={v => updateChar('maxNen', v)} 
+                                        onOpenCalculator={() => handleOpenCalculator('char', char.id, 'currentNen', 'Pontos de Aura', char.currentNen, char.maxNen)}
+                                    />
+                                    
                                     <div className="mt-2 flex items-center justify-between bg-white/5 p-3 rounded border border-white/5">
                                         <div className="flex items-center gap-2"><Shield size={16} className="text-gray-400"/><span className="text-xs font-tech text-gray-400 uppercase tracking-widest">Defesa (CA)</span></div>
                                         {isEditing ? <input type="number" value={char.ca} onChange={e => updateChar('ca', parseInt(e.target.value))} className="w-12 bg-transparent text-white text-center font-bold text-2xl border-b border-white/20"/> : <span className="text-2xl font-bold text-white mr-2">{char.ca}</span>}
+                                    </div>
+
+                                    {/* Conditions / Status Effects */}
+                                    <div className="bg-black/30 p-3 rounded border border-white/5 relative">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-[9px] font-tech text-gray-500 uppercase tracking-widest flex items-center gap-1"><AlertCircle size={10}/> Condições & Status</span>
+                                            {isEditing && (
+                                                <div className="flex items-center gap-1">
+                                                    <input value={conditionInput} onChange={e => setConditionInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCondition()} placeholder="Add..." className="bg-black/50 border border-white/10 text-[10px] text-white px-2 py-0.5 w-20 outline-none"/>
+                                                    <button onClick={addCondition} className="bg-theme text-[10px] text-white px-1.5 py-0.5 rounded hover:bg-white hover:text-black transition-colors">+</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 min-h-[24px]">
+                                            {(!char.conditions || char.conditions.length === 0) && <span className="text-[10px] text-gray-600 italic">Nenhuma condição ativa.</span>}
+                                            {(char.conditions || []).map((cond, idx) => (
+                                                <span key={idx} className="text-[10px] font-bold px-2 py-0.5 bg-red-900/30 text-red-200 border border-red-500/30 rounded flex items-center gap-1">
+                                                    {cond}
+                                                    {isEditing && <button onClick={() => removeCondition(idx)} className="hover:text-white"><X size={10}/></button>}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="glass-panel p-4 tech-border flex items-center justify-center">
@@ -792,12 +975,12 @@
                                                         <div className="mt-2 text-xs text-gray-400 font-serif leading-relaxed grid gap-2">
                                                             {/* Description */}
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-gray-500 uppercase">Visual & Lore</span>
+                                                                <span className="text-[9px] font-bold text-gray-500 uppercase">Aparência e História</span>
                                                                 {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-16 resize-none mt-1 text-gray-300" value={equippedWeapon.description} onChange={e => updateEquippedWeapon('description', e.target.value)} placeholder="Descrição visual da arma..."/> : <p className="text-gray-300 mt-1">{equippedWeapon.description}</p>}
                                                             </div>
                                                             {/* Powers */}
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-gray-500 uppercase flex items-center gap-1"><Sparkles size={10}/> Poderes & Habilidades</span>
+                                                                <span className="text-[9px] font-bold text-gray-500 uppercase flex items-center gap-1"><Sparkles size={10}/> Poderes e Habilidades</span>
                                                                 {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-16 resize-none mt-1 text-blue-200" value={equippedWeapon.powers} onChange={e => updateEquippedWeapon('powers', e.target.value)} placeholder="Efeitos passivos, habilidades especiais..."/> : <p className="text-blue-200 mt-1 whitespace-pre-wrap">{equippedWeapon.powers || <span className="text-gray-600 italic">Nenhum poder especial.</span>}</p>}
                                                             </div>
                                                         </div>
@@ -968,6 +1151,7 @@
                                                                 const newSummons = char.summons.map(s => s.id === summon.id ? {...s, maxHp: v} : s);
                                                                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
                                                             }}
+                                                            onOpenCalculator={() => handleOpenCalculator('summon', summon.id, 'currentHp', `HP (${summon.name})`, summon.currentHp, summon.maxHp)}
                                                         />
                                                         <StatBar label="Nen" current={summon.currentNen} max={summon.maxNen} color={themeColor} icon={<Zap size={10}/>} isEditing={isEditing}
                                                              onChange={v => {
@@ -978,6 +1162,7 @@
                                                                 const newSummons = char.summons.map(s => s.id === summon.id ? {...s, maxNen: v} : s);
                                                                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
                                                             }}
+                                                            onOpenCalculator={() => handleOpenCalculator('summon', summon.id, 'currentNen', `Nen (${summon.name})`, summon.currentNen, summon.maxNen)}
                                                         />
                                                     </div>
                                                     <div className="flex items-center justify-center relative">
@@ -1077,13 +1262,23 @@
 
                              {/* Console Log Overlay (Bottom of Tab) */}
                              <div className="absolute bottom-0 left-0 right-0 max-h-40 overflow-y-auto bg-black/90 border-t border-white/10 p-2 font-mono text-[10px] pointer-events-auto">
-                                <div className="flex items-center justify-between mb-1 sticky top-0 bg-black/90 w-full z-10">
+                                <div className="flex flex-wrap items-center justify-between mb-1 sticky top-0 bg-black/90 w-full z-10 pb-1 gap-2">
                                     <span className="flex items-center gap-2 text-gray-500"><Terminal size={10}/> Console de Batalha</span>
+                                    
+                                    {/* Generic Dice Roller */}
+                                    <div className="flex items-center gap-1 bg-white/5 rounded px-2 py-0.5">
+                                        {[4,6,8,10,12,20,100].map(d => (
+                                            <button key={d} onClick={() => handleRollGeneric(d)} className="text-[9px] text-gray-400 hover:text-theme hover:bg-white/10 px-1 rounded transition-colors active:scale-90">d{d}</button>
+                                        ))}
+                                    </div>
+
                                     <button onClick={() => {
-                                        updateChar('currentHp', Math.min(char.maxHp, char.currentHp + 5));
-                                        updateChar('currentNen', Math.min(char.maxNen, char.currentNen + 10));
-                                        addLog('Descanso Curto', 'Recuperado', '+5 HP, +10 AP');
-                                    }} className="text-[9px] text-green-400 hover:text-green-300 flex items-center gap-1"><BatteryCharging size={10}/> Descansar</button>
+                                        const healHp = Math.floor(char.maxHp * 0.2);
+                                        const healNen = Math.floor(char.maxNen * 0.2);
+                                        updateChar('currentHp', Math.min(char.maxHp, char.currentHp + healHp));
+                                        updateChar('currentNen', Math.min(char.maxNen, char.currentNen + healNen));
+                                        addLog('Descanso', 'Recuperado', `+${healHp} HP, +${healNen} AP (20%)`);
+                                    }} className="text-[9px] text-green-400 hover:text-green-300 flex items-center gap-1 bg-green-900/20 px-2 py-0.5 rounded border border-green-500/20"><BatteryCharging size={10}/> Descansar</button>
                                 </div>
                                 {logs.length === 0 && <div className="text-gray-700 italic pl-4">Aguardando rolagens...</div>}
                                 {logs.map(log => (
