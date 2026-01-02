@@ -250,25 +250,25 @@
         return (
             <div className="flex flex-col w-full mb-3 group relative">
             <div className="flex justify-between items-end mb-1">
-                <div className="flex items-center gap-2 text-white font-tech text-[10px] font-bold uppercase tracking-wider opacity-80">
+                <div className="flex items-center gap-2 text-white font-tech text-xs font-bold uppercase tracking-wider opacity-90">
                 {icon && <span style={{color}}>{icon}</span>}
                 <span className="text-gray-200">{label}</span>
                 </div>
-                <div className="flex items-center text-md font-bold font-mono">
+                <div className="flex items-center text-lg font-bold font-mono">
                 
                 {/* Calculator Button Trigger */}
                 {!isEditing && (
-                    <button onClick={onOpenCalculator} className="mr-2 text-gray-500 hover:text-white transition-colors opacity-50 hover:opacity-100" title="Calculadora de Dano/Cura">
-                        <Calculator size={14} />
+                    <button onClick={onOpenCalculator} className="mr-3 text-gray-500 hover:text-white transition-colors opacity-60 hover:opacity-100" title="Calculadora de Dano/Cura">
+                        <Calculator size={16} />
                     </button>
                 )}
 
-                <input type="number" value={current} onChange={(e) => onChange && onChange(parseInt(e.target.value) || 0)} className="w-12 bg-transparent text-right outline-none border-b border-transparent hover:border-white/50 focus:border-white text-white font-bold" />
+                <input type="number" value={current} onChange={(e) => onChange && onChange(parseInt(e.target.value) || 0)} className="w-14 bg-transparent text-right outline-none border-b border-transparent hover:border-white/50 focus:border-white text-white font-bold" />
                 <span className="mx-1 text-gray-500">/</span>
-                {isEditing ? <input type="number" value={max} onChange={(e) => onMaxChange && onMaxChange(parseInt(e.target.value) || 0)} className="w-12 bg-white/10 rounded px-1 text-center outline-none border border-white/20 text-white"/> : <span className="text-gray-400 w-12 text-center">{max}</span>}
+                {isEditing ? <input type="number" value={max} onChange={(e) => onMaxChange && onMaxChange(parseInt(e.target.value) || 0)} className="w-14 bg-white/10 rounded px-1 text-center outline-none border border-white/20 text-white"/> : <span className="text-gray-400 w-14 text-center">{max}</span>}
                 </div>
             </div>
-            <div className="relative h-3 bg-[#0a0a0c] overflow-hidden border border-white/10 skew-x-[-12deg] mx-1">
+            <div className="relative h-4 bg-[#0a0a0c] overflow-hidden border border-white/10 skew-x-[-12deg] mx-1">
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_2px,#000_2px)] bg-[length:6px_100%] opacity-20 z-10"></div>
                 <div className="h-full transition-all duration-700" style={{ width: `${percentage}%`, backgroundColor: color, boxShadow: `0 0 10px ${color}` }}></div>
             </div>
@@ -300,21 +300,21 @@
           return (
             <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur p-4 animate-fade-in">
                 <div className="glass-panel w-full max-w-xs p-6 tech-border relative flex flex-col items-center">
-                    <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-white p-2"><X size={20}/></button>
+                    <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-white p-2"><X size={24}/></button>
                     
                     <h3 className="text-sm font-tech text-gray-400 uppercase tracking-widest mb-1">{target.label}</h3>
-                    <div className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <div className="text-3xl font-bold text-white mb-6 flex items-center gap-2">
                         <span>{target.current}</span>
                         <span className="text-gray-600">/</span>
                         <span className="text-gray-500">{target.max}</span>
                     </div>
 
-                    <div className="w-full bg-black/40 border border-white/10 p-2 mb-4 flex items-center justify-center">
+                    <div className="w-full bg-black/40 border border-white/10 p-3 mb-6 flex items-center justify-center">
                          <input 
                             type="number" 
                             autoFocus
                             placeholder="0"
-                            className="bg-transparent text-center text-4xl font-mono text-white outline-none w-full"
+                            className="bg-transparent text-center text-5xl font-mono text-white outline-none w-full"
                             value={value}
                             onChange={(e) => setValue(e.target.value)}
                             onKeyDown={(e) => {
@@ -324,25 +324,25 @@
                     </div>
 
                     {/* Quick Buttons */}
-                    <div className="flex gap-2 mb-4 w-full justify-center">
+                    <div className="flex gap-2 mb-6 w-full justify-center">
                         {[1, 5, 10].map(v => (
-                            <button key={v} onClick={() => setValue(v)} className="bg-white/5 hover:bg-white/20 border border-white/10 text-xs font-mono py-1 px-3 rounded text-gray-300">
+                            <button key={v} onClick={() => setValue(v)} className="bg-white/5 hover:bg-white/20 border border-white/10 text-sm font-mono py-2 px-4 rounded text-gray-300">
                                 {v}
                             </button>
                         ))}
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="grid grid-cols-2 gap-3 w-full">
+                    <div className="grid grid-cols-2 gap-4 w-full">
                         <button 
                             onClick={() => handleApply('sub')} 
-                            className={`py-3 ${isHp ? 'bg-red-900/40 hover:bg-red-800/60 border-red-500/30 text-red-200' : 'bg-orange-900/40 hover:bg-orange-800/60 border-orange-500/30 text-orange-200'} border rounded font-bold uppercase text-xs tracking-wider transition-all active:scale-95`}
+                            className={`py-4 ${isHp ? 'bg-red-900/40 hover:bg-red-800/60 border-red-500/30 text-red-200' : 'bg-orange-900/40 hover:bg-orange-800/60 border-orange-500/30 text-orange-200'} border rounded font-bold uppercase text-xs tracking-wider transition-all active:scale-95`}
                         >
                             {isHp ? 'Dano (-)' : 'Gastar (-)'}
                         </button>
                         <button 
                             onClick={() => handleApply('add')} 
-                            className={`py-3 ${isHp ? 'bg-green-900/40 hover:bg-green-800/60 border-green-500/30 text-green-200' : 'bg-blue-900/40 hover:bg-blue-800/60 border-blue-500/30 text-blue-200'} border rounded font-bold uppercase text-xs tracking-wider transition-all active:scale-95`}
+                            className={`py-4 ${isHp ? 'bg-green-900/40 hover:bg-green-800/60 border-green-500/30 text-green-200' : 'bg-blue-900/40 hover:bg-blue-800/60 border-blue-500/30 text-blue-200'} border rounded font-bold uppercase text-xs tracking-wider transition-all active:scale-95`}
                         >
                             {isHp ? 'Curar (+)' : 'Recuperar (+)'}
                         </button>
@@ -350,7 +350,7 @@
 
                     {/* Preview */}
                     {value && (
-                        <div className="mt-3 text-[10px] font-mono text-gray-500 flex justify-between w-full px-1">
+                        <div className="mt-4 text-xs font-mono text-gray-500 flex justify-between w-full px-2">
                             <span>Res: {Math.max(0, target.current - (parseInt(value)||0))}</span>
                             <span>Res: {Math.min(target.max, target.current + (parseInt(value)||0))}</span>
                         </div>
@@ -362,19 +362,19 @@
 
       const AttributeCard = ({ label, value, icon: Icon, color, isEditing, onRoll, onChange, onLabelChange }) => {
         return (
-            <div className="tech-border bg-[#131316] p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-all group relative overflow-hidden" onClick={!isEditing ? onRoll : undefined}>
+            <div className="tech-border bg-[#131316] p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-all group relative overflow-hidden" onClick={!isEditing ? onRoll : undefined}>
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10 flex flex-col items-center">
-                    <Icon size={24} style={{ color }} className="mb-2 drop-shadow-md group-hover:scale-110 transition-transform"/>
+                    <Icon size={28} style={{ color }} className="mb-2 drop-shadow-md group-hover:scale-110 transition-transform"/>
                     {isEditing ? (
-                        <input type="number" value={value} onChange={(e) => onChange(parseInt(e.target.value) || 0)} className="w-12 bg-black/50 border-b border-white/30 text-center text-white font-mono text-xl outline-none"/>
+                        <input type="number" value={value} onChange={(e) => onChange(parseInt(e.target.value) || 0)} className="w-16 bg-black/50 border-b border-white/30 text-center text-white font-mono text-3xl outline-none"/>
                     ) : (
-                        <span className="text-2xl font-mono font-bold text-white group-hover:text-theme transition-colors">{value >= 0 ? `+${value}` : value}</span>
+                        <span className="text-3xl font-mono font-bold text-white group-hover:text-theme transition-colors">{value >= 0 ? `+${value}` : value}</span>
                     )}
                     {isEditing ? (
-                         <input value={label} onChange={e => onLabelChange(e.target.value)} className="text-[9px] font-tech uppercase tracking-widest text-gray-500 mt-1 bg-transparent border-b border-transparent hover:border-white/20 text-center w-full outline-none"/>
+                         <input value={label} onChange={e => onLabelChange(e.target.value)} className="text-[10px] font-tech uppercase tracking-widest text-gray-500 mt-2 bg-transparent border-b border-transparent hover:border-white/20 text-center w-full outline-none"/>
                     ) : (
-                        <span className="text-[9px] font-tech uppercase tracking-widest text-gray-500 mt-1 truncate w-full text-center">{label}</span>
+                        <span className="text-[10px] font-tech uppercase tracking-widest text-gray-500 mt-2 truncate w-full text-center">{label}</span>
                     )}
                 </div>
             </div>
@@ -498,9 +498,9 @@
                     
                     {points.map((p, i) => (
                         <g key={i}>
-                            <text x={p.x} y={p.y < 50 ? p.y - 5 : p.y + 12} textAnchor="middle" fontSize="6" fill={efficiencies[i] === 1 ? activeColor : '#555'} className="font-tech font-bold uppercase">{p.l}</text>
+                            <text x={p.x} y={p.y < 50 ? p.y - 5 : p.y + 12} textAnchor="middle" fontSize="8" fill={efficiencies[i] === 1 ? activeColor : '#555'} className="font-tech font-bold uppercase">{p.l}</text>
                             {/* Percentage Labels */}
-                            <text x={p.x} y={p.y < 50 ? p.y - 12 : p.y + 18} textAnchor="middle" fontSize="4" fill={efficiencies[i] > 0 ? '#aaa' : '#333'} className="font-mono">{(efficiencies[i]*100).toFixed(0)}%</text>
+                            <text x={p.x} y={p.y < 50 ? p.y - 12 : p.y + 18} textAnchor="middle" fontSize="6" fill={efficiencies[i] > 0 ? '#aaa' : '#333'} className="font-mono">{(efficiencies[i]*100).toFixed(0)}%</text>
                         </g>
                     ))}
 
@@ -760,8 +760,8 @@
 
                 {/* BRANDING */}
                 <div className="fixed bottom-4 left-4 z-40 flex items-center gap-2 pointer-events-none select-none animate-fade-in">
-                    <Monitor size={16} className="text-gray-600" />
-                    <div className="text-[10px] font-tech text-gray-600 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <Monitor size={18} className="text-gray-600" />
+                    <div className="text-xs font-tech text-gray-600 uppercase tracking-[0.2em] flex items-center gap-2">
                         Schrodinger Corp. <span className="opacity-30">|</span> SYS.v4.9 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-blink"></span>
                     </div>
                 </div>
@@ -771,18 +771,18 @@
                 {/* Navbar */}
                 <div className="sticky top-0 z-50 bg-[#0a0a0c]/90 backdrop-blur-md border-b border-white/10 px-4 py-3 flex justify-between items-center shadow-lg">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 flex items-center justify-center bg-white/10 rounded border border-white/20">
-                            <span className="font-title text-theme text-xl font-bold">H</span>
+                        <div className="w-10 h-10 flex items-center justify-center bg-white/10 rounded border border-white/20">
+                            <span className="font-title text-theme text-2xl font-bold">H</span>
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-tech text-[10px] font-bold tracking-[0.3em] text-gray-500 uppercase">Sistema Hunter</span>
-                            <span className="font-bold text-white text-xs tracking-widest uppercase">{char.nickname}</span>
+                            <span className="font-tech text-xs font-bold tracking-[0.3em] text-gray-500 uppercase">Sistema Hunter</span>
+                            <span className="font-bold text-white text-sm tracking-widest uppercase">{char.nickname}</span>
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <button onClick={() => setShowShareModal(true)} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-full"><Share2 size={16}/></button>
-                        <button onClick={() => setIsCharModalOpen(true)} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-full"><Users size={16}/></button>
-                        <button onClick={() => setIsEditing(!isEditing)} className={`px-4 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider border transition-all ${isEditing ? 'bg-white text-black border-white' : 'bg-transparent text-theme border-theme'}`}>
+                        <button onClick={() => setShowShareModal(true)} className="p-3 text-gray-400 hover:text-white bg-white/5 rounded-full"><Share2 size={20}/></button>
+                        <button onClick={() => setIsCharModalOpen(true)} className="p-3 text-gray-400 hover:text-white bg-white/5 rounded-full"><Users size={20}/></button>
+                        <button onClick={() => setIsEditing(!isEditing)} className={`px-5 py-2 rounded text-xs font-bold uppercase tracking-wider border transition-all ${isEditing ? 'bg-white text-black border-white' : 'bg-transparent text-theme border-theme'}`}>
                             {isEditing ? 'Salvar' : 'Editar'}
                         </button>
                     </div>
@@ -792,10 +792,10 @@
                 {showShareModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur p-4">
                         <div className="glass-panel w-full max-w-sm p-6 text-center tech-border relative">
-                            <button onClick={() => setShowShareModal(false)} className="absolute top-2 right-2 text-gray-500 hover:text-red-400 p-2"><X size={20}/></button>
-                            <h3 className="text-xl font-tech text-white mb-2 uppercase tracking-widest">Acesso ao Banco de Dados</h3>
-                            <button onClick={copyLink} className="w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold uppercase tracking-wider flex items-center justify-center gap-2 mt-4">
-                                <Copy size={16}/> Copiar Link
+                            <button onClick={() => setShowShareModal(false)} className="absolute top-2 right-2 text-gray-500 hover:text-red-400 p-2"><X size={24}/></button>
+                            <h3 className="text-2xl font-tech text-white mb-2 uppercase tracking-widest">Acesso ao Banco de Dados</h3>
+                            <button onClick={copyLink} className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold uppercase tracking-wider flex items-center justify-center gap-2 mt-4 text-sm">
+                                <Copy size={18}/> Copiar Link
                             </button>
                         </div>
                     </div>
@@ -819,15 +819,15 @@
                             <div className="h-96 w-full relative bg-gray-900 overflow-hidden">
                                 <img src={char.avatarUrl} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700"/>
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-transparent to-transparent"></div>
-                                {isEditing && <button onClick={() => triggerUpload({type:'avatar'})} className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded hover:bg-white hover:text-black"><Upload size={16}/></button>}
-                                <div className="absolute bottom-4 left-4 right-4">
-                                    {isEditing ? <input value={char.nickname} onChange={e => updateChar('nickname', e.target.value)} className="bg-transparent border-b border-white/50 text-3xl font-title text-white w-full"/> : 
-                                    <h1 className="text-4xl font-title text-white drop-shadow-lg" style={{textShadow: `0 0 10px ${themeColor}`}}>{char.nickname}</h1>}
-                                    <span className="text-xs font-tech text-theme uppercase tracking-widest">{char.nenType}</span>
+                                {isEditing && <button onClick={() => triggerUpload({type:'avatar'})} className="absolute top-4 right-4 p-3 bg-black/50 text-white rounded hover:bg-white hover:text-black"><Upload size={20}/></button>}
+                                <div className="absolute bottom-6 left-6 right-6">
+                                    {isEditing ? <input value={char.nickname} onChange={e => updateChar('nickname', e.target.value)} className="bg-transparent border-b border-white/50 text-5xl font-title text-white w-full"/> : 
+                                    <h1 className="text-5xl font-title text-white drop-shadow-lg leading-tight" style={{textShadow: `0 0 10px ${themeColor}`}}>{char.nickname}</h1>}
+                                    <span className="text-sm font-tech text-theme uppercase tracking-widest mt-1 block">{char.nenType}</span>
                                 </div>
                             </div>
                             {/* XP Strip */}
-                            <div className="bg-[#151518] px-4 py-2 border-t border-white/5 flex justify-between items-center font-mono text-[10px]">
+                            <div className="bg-[#151518] px-5 py-3 border-t border-white/5 flex justify-between items-center font-mono text-xs">
                                 <div className="flex items-center gap-2">
                                     <span className="text-gray-500">NÍVEL</span>
                                     {isEditing ? (
@@ -835,42 +835,42 @@
                                             type="number"
                                             value={char.hunterLevel}
                                             onChange={(e) => updateChar('hunterLevel', parseInt(e.target.value) || 0)}
-                                            className="bg-black/50 border-b border-white/20 text-white w-8 text-center outline-none"
+                                            className="bg-black/50 border-b border-white/20 text-white w-10 text-center outline-none"
                                         />
                                     ) : (
-                                        <span className="text-white text-sm">{char.hunterLevel}</span>
+                                        <span className="text-white text-base font-bold">{char.hunterLevel}</span>
                                     )}
                                 </div>
-                                <div className="w-32 text-right">
+                                <div className="w-40 text-right">
                                     {isEditing ? (
                                         <div className="flex justify-end gap-1 items-center mb-1">
                                             <input
                                                 type="number"
                                                 value={char.xp}
                                                 onChange={(e) => updateChar('xp', parseInt(e.target.value) || 0)}
-                                                className="bg-black/50 border-b border-white/20 text-white w-10 text-right outline-none"
+                                                className="bg-black/50 border-b border-white/20 text-white w-12 text-right outline-none"
                                             />
                                             <span className="text-gray-500">/</span>
                                             <input
                                                 type="number"
                                                 value={char.maxXp}
                                                 onChange={(e) => updateChar('maxXp', parseInt(e.target.value) || 0)}
-                                                className="bg-black/50 border-b border-white/20 text-gray-400 w-10 text-center outline-none"
+                                                className="bg-black/50 border-b border-white/20 text-gray-400 w-12 text-center outline-none"
                                             />
                                         </div>
                                     ) : (
-                                        <span className="text-gray-500">{char.xp} / {char.maxXp} XP</span>
+                                        <span className="text-gray-500 text-xs">{char.xp} / {char.maxXp} XP</span>
                                     )}
-                                    <div className="w-full h-1 bg-gray-700 rounded-full mt-1 overflow-hidden">
+                                    <div className="w-full h-1.5 bg-gray-700 rounded-full mt-1.5 overflow-hidden">
                                         <div className="h-full bg-yellow-500" style={{width: `${Math.min(100, (char.xp/char.maxXp)*100)}%`}}></div>
                                     </div>
                                 </div>
                             </div>
                             {/* Personal Details */}
-                            <div className="p-4 grid grid-cols-2 gap-y-3 text-xs font-mono bg-black/40">
+                            <div className="p-5 grid grid-cols-2 gap-y-4 text-sm font-mono bg-black/40">
                                 {[{l:'Idade',k:'age'},{l:'Altura',k:'height'},{l:'Peso',k:'weight'},{l:'Nacionalidade',k:'nationality'}].map(f => (
                                     <div key={f.k}>
-                                        <span className="text-gray-500 block text-[9px] uppercase tracking-wider">{f.l}</span>
+                                        <span className="text-gray-500 block text-[10px] uppercase tracking-wider mb-0.5">{f.l}</span>
                                         {isEditing ? <input value={char[f.k]} onChange={e => updateChar(f.k, e.target.value)} className="bg-transparent border-b border-white/20 text-white w-full"/> : <span className="text-white">{char[f.k]}</span>}
                                     </div>
                                 ))}
@@ -879,13 +879,13 @@
 
                         {/* Nen Analysis Card (Restored) */}
                         <div className="glass-panel p-6 tech-border flex flex-col items-center">
-                            <div className="flex justify-between w-full items-center mb-4">
-                                <span className="text-xs font-tech uppercase tracking-widest text-gray-500 flex items-center gap-2"><Hexagon size={14}/> Afinidade de Nen</span>
-                                {isEditing && <select value={char.nenType} onChange={e => updateChar('nenType', e.target.value)} className="bg-black border border-white/20 text-white text-[10px] p-1 uppercase">{Object.keys(NenType).map(k => <option key={k} value={NenType[k]}>{NenType[k]}</option>)}</select>}
+                            <div className="flex justify-between w-full items-center mb-6">
+                                <span className="text-sm font-tech uppercase tracking-widest text-gray-500 flex items-center gap-2"><Hexagon size={16}/> Afinidade de Nen</span>
+                                {isEditing && <select value={char.nenType} onChange={e => updateChar('nenType', e.target.value)} className="bg-black border border-white/20 text-white text-xs p-1 uppercase">{Object.keys(NenType).map(k => <option key={k} value={NenType[k]}>{NenType[k]}</option>)}</select>}
                             </div>
-                            <NenHexagon activeType={char.nenType} size={180} />
-                            <div className="mt-4 text-center">
-                                <span className="text-2xl font-title text-white" style={{color: themeColor}}>{char.nenType.split(' ')[0]}</span>
+                            <NenHexagon activeType={char.nenType} size={220} />
+                            <div className="mt-6 text-center">
+                                <span className="text-3xl font-title text-white" style={{color: themeColor}}>{char.nenType.split(' ')[0]}</span>
                             </div>
                         </div>
                     </div>
@@ -897,53 +897,53 @@
                             
                             {/* Stats Column */}
                             <div className="flex flex-col gap-6">
-                                <div className="glass-panel p-5 tech-border flex flex-col justify-center gap-4">
-                                    <StatBar label="Pontos de Vida (HP)" current={char.currentHp} max={char.maxHp} color="#ef4444" icon={<Heart size={12}/>} isEditing={isEditing} 
+                                <div className="glass-panel p-6 tech-border flex flex-col justify-center gap-5">
+                                    <StatBar label="Pontos de Vida (HP)" current={char.currentHp} max={char.maxHp} color="#ef4444" icon={<Heart size={14}/>} isEditing={isEditing} 
                                         onChange={v => updateChar('currentHp', v)} 
                                         onMaxChange={v => updateChar('maxHp', v)}
                                         onOpenCalculator={() => handleOpenCalculator('char', char.id, 'currentHp', 'Pontos de Vida', char.currentHp, char.maxHp)}
                                     />
-                                    <StatBar label="Pontos de Aura (Nen)" current={char.currentNen} max={char.maxNen} color={themeColor} icon={<Zap size={12}/>} isEditing={isEditing} 
+                                    <StatBar label="Pontos de Aura (Nen)" current={char.currentNen} max={char.maxNen} color={themeColor} icon={<Zap size={14}/>} isEditing={isEditing} 
                                         onChange={v => updateChar('currentNen', v)} 
                                         onMaxChange={v => updateChar('maxNen', v)} 
                                         onOpenCalculator={() => handleOpenCalculator('char', char.id, 'currentNen', 'Pontos de Aura', char.currentNen, char.maxNen)}
                                     />
                                     
-                                    <div className="mt-2 flex items-center justify-between bg-white/5 p-3 rounded border border-white/5">
-                                        <div className="flex items-center gap-2"><Shield size={16} className="text-gray-400"/><span className="text-xs font-tech text-gray-400 uppercase tracking-widest">Defesa (CA)</span></div>
-                                        {isEditing ? <input type="number" value={char.ca} onChange={e => updateChar('ca', parseInt(e.target.value))} className="w-12 bg-transparent text-white text-center font-bold text-2xl border-b border-white/20"/> : <span className="text-2xl font-bold text-white mr-2">{char.ca}</span>}
+                                    <div className="mt-2 flex items-center justify-between bg-white/5 p-4 rounded border border-white/5">
+                                        <div className="flex items-center gap-2"><Shield size={18} className="text-gray-400"/><span className="text-xs font-tech text-gray-400 uppercase tracking-widest">Defesa (CA)</span></div>
+                                        {isEditing ? <input type="number" value={char.ca} onChange={e => updateChar('ca', parseInt(e.target.value))} className="w-16 bg-transparent text-white text-center font-bold text-3xl border-b border-white/20"/> : <span className="text-3xl font-bold text-white mr-2">{char.ca}</span>}
                                     </div>
 
                                     {/* Conditions / Status Effects */}
-                                    <div className="bg-black/30 p-3 rounded border border-white/5 relative">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-[9px] font-tech text-gray-500 uppercase tracking-widest flex items-center gap-1"><AlertCircle size={10}/> Condições & Status</span>
+                                    <div className="bg-black/30 p-4 rounded border border-white/5 relative">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-[10px] font-tech text-gray-500 uppercase tracking-widest flex items-center gap-2"><AlertCircle size={12}/> Condições & Status</span>
                                             {isEditing && (
                                                 <div className="flex items-center gap-1">
-                                                    <input value={conditionInput} onChange={e => setConditionInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCondition()} placeholder="Add..." className="bg-black/50 border border-white/10 text-[10px] text-white px-2 py-0.5 w-20 outline-none"/>
-                                                    <button onClick={addCondition} className="bg-theme text-[10px] text-white px-1.5 py-0.5 rounded hover:bg-white hover:text-black transition-colors">+</button>
+                                                    <input value={conditionInput} onChange={e => setConditionInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCondition()} placeholder="Add..." className="bg-black/50 border border-white/10 text-xs text-white px-2 py-1 w-24 outline-none"/>
+                                                    <button onClick={addCondition} className="bg-theme text-xs text-white px-2 py-1 rounded hover:bg-white hover:text-black transition-colors">+</button>
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex flex-wrap gap-2 min-h-[24px]">
-                                            {(!char.conditions || char.conditions.length === 0) && <span className="text-[10px] text-gray-600 italic">Nenhuma condição ativa.</span>}
+                                        <div className="flex flex-wrap gap-2 min-h-[30px]">
+                                            {(!char.conditions || char.conditions.length === 0) && <span className="text-xs text-gray-600 italic">Nenhuma condição ativa.</span>}
                                             {(char.conditions || []).map((cond, idx) => (
-                                                <span key={idx} className="text-[10px] font-bold px-2 py-0.5 bg-red-900/30 text-red-200 border border-red-500/30 rounded flex items-center gap-1">
+                                                <span key={idx} className="text-xs font-bold px-3 py-1 bg-red-900/30 text-red-200 border border-red-500/30 rounded flex items-center gap-2">
                                                     {cond}
-                                                    {isEditing && <button onClick={() => removeCondition(idx)} className="hover:text-white"><X size={10}/></button>}
+                                                    {isEditing && <button onClick={() => removeCondition(idx)} className="hover:text-white"><X size={12}/></button>}
                                                 </span>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="glass-panel p-4 tech-border flex items-center justify-center">
-                                    <AttributesRadar attributes={char.attributes} labels={attrLabels} size={150} color={themeColor} />
+                                    <AttributesRadar attributes={char.attributes} labels={attrLabels} size={180} color={themeColor} />
                                 </div>
                             </div>
                             
                             {/* Attributes Grid */}
-                            <div className="glass-panel p-3 tech-border">
-                                <div className="grid grid-cols-3 gap-2 h-full content-start">
+                            <div className="glass-panel p-4 tech-border">
+                                <div className="grid grid-cols-3 gap-3 h-full content-start">
                                     <AttributeCard label={attrLabels.strength} value={char.attributes.strength} icon={Sword} color="#c0392b" isEditing={isEditing} onRoll={() => handleRollAttribute('strength', char.attributes.strength)} onChange={(v) => updateAttribute('strength', v)} onLabelChange={(v) => updateAttributeLabel('strength', v)} />
                                     <AttributeCard label={attrLabels.intelligence} value={char.attributes.intelligence} icon={Brain} color="#8e44ad" isEditing={isEditing} onRoll={() => handleRollAttribute('intelligence', char.attributes.intelligence)} onChange={(v) => updateAttribute('intelligence', v)} onLabelChange={(v) => updateAttributeLabel('intelligence', v)} />
                                     <AttributeCard label={attrLabels.charisma} value={char.attributes.charisma} icon={Feather} color="#27ae60" isEditing={isEditing} onRoll={() => handleRollAttribute('charisma', char.attributes.charisma)} onChange={(v) => updateAttribute('charisma', v)} onLabelChange={(v) => updateAttributeLabel('charisma', v)} />
@@ -955,7 +955,7 @@
                         </div>
 
                         {/* Tabs & Content */}
-                        <div className="glass-panel tech-border flex flex-col min-h-[500px] relative">
+                        <div className="glass-panel tech-border flex flex-col min-h-[600px] relative">
                             <div className="flex bg-black/40 border-b border-white/10 overflow-x-auto">
                                 {[
                                     {id: 'hatsus', label: 'Hatsus', icon: Zap},
@@ -965,28 +965,28 @@
                                     {id: 'inventory', label: 'Inventário', icon: Box},
                                     {id: 'bio', label: 'Bio', icon: ScrollText}
                                 ].map(tab => (
-                                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2 whitespace-nowrap ${activeTab === tab.id ? 'text-white border-theme bg-white/5' : 'text-gray-500 border-transparent hover:text-gray-300'}`}>
-                                        <tab.icon size={14} /> {tab.label}
+                                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-8 py-5 text-xs font-bold uppercase tracking-widest transition-colors border-b-2 whitespace-nowrap ${activeTab === tab.id ? 'text-white border-theme bg-white/5' : 'text-gray-500 border-transparent hover:text-gray-300'}`}>
+                                        <tab.icon size={16} /> {tab.label}
                                     </button>
                                 ))}
                             </div>
 
-                            <div className="p-6 flex-1 bg-gradient-to-b from-transparent to-black/20 overflow-y-auto pb-44">
+                            <div className="p-8 flex-1 bg-gradient-to-b from-transparent to-black/20 overflow-y-auto pb-44">
                                 {/* Skills Logic */}
                                 {['hatsus', 'combat', 'weapon'].includes(activeTab) && (
-                                    <div className="space-y-4">
+                                    <div className="space-y-6">
                                         
                                         {/* Weapon Card (Specific to Weapon Tab) */}
                                         {activeTab === 'weapon' && (
-                                            <div className="mb-6 tech-border bg-[#131316] p-4 relative group">
-                                                 <h3 className="text-xs font-tech uppercase tracking-widest text-theme mb-4 flex items-center gap-2"><Sword size={14}/> Arma Equipada</h3>
-                                                 <div className="flex flex-col md:flex-row gap-4">
+                                            <div className="mb-8 tech-border bg-[#131316] p-5 relative group">
+                                                 <h3 className="text-xs font-tech uppercase tracking-widest text-theme mb-4 flex items-center gap-2"><Sword size={16}/> Arma Equipada</h3>
+                                                 <div className="flex flex-col md:flex-row gap-6">
                                                     {/* Weapon Image */}
-                                                    <div className="w-full md:w-32 h-32 bg-black/40 relative border border-white/10 flex-shrink-0">
-                                                        {equippedWeapon.imageUrl ? <img src={equippedWeapon.imageUrl} className="w-full h-full object-cover"/> : <div className="flex items-center justify-center h-full text-white/10"><Sword size={32}/></div>}
+                                                    <div className="w-full md:w-40 h-40 bg-black/40 relative border border-white/10 flex-shrink-0">
+                                                        {equippedWeapon.imageUrl ? <img src={equippedWeapon.imageUrl} className="w-full h-full object-cover"/> : <div className="flex items-center justify-center h-full text-white/10"><Sword size={40}/></div>}
                                                          {isEditing && (
                                                             <button onClick={() => triggerUpload({type: 'equippedWeapon'})} className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                                                                <Camera size={20}/>
+                                                                <Camera size={24}/>
                                                             </button>
                                                         )}
                                                     </div>
@@ -994,26 +994,26 @@
                                                     <div className="flex-1 flex flex-col justify-between">
                                                         <div className="flex justify-between items-start">
                                                              <div className="flex-1">
-                                                                 {isEditing ? <input className="bg-transparent border-b border-white/20 text-xl font-title text-white w-full mb-1" value={equippedWeapon.name} onChange={e => updateEquippedWeapon('name', e.target.value)} placeholder="Nome da Arma"/> : <h2 className="text-xl font-title text-white">{equippedWeapon.name}</h2>}
+                                                                 {isEditing ? <input className="bg-transparent border-b border-white/20 text-2xl font-title text-white w-full mb-2" value={equippedWeapon.name} onChange={e => updateEquippedWeapon('name', e.target.value)} placeholder="Nome da Arma"/> : <h2 className="text-2xl font-title text-white">{equippedWeapon.name}</h2>}
                                                              </div>
                                                              {/* Damage Roll Button */}
                                                              {!isEditing && equippedWeapon.damage && (
-                                                                <button onClick={() => handleRollWeapon(equippedWeapon)} className="text-xs font-mono text-red-300 bg-red-900/20 px-2 py-1 border border-red-500/20 hover:bg-red-900/40 flex items-center gap-1 cursor-pointer transition-colors">
-                                                                    <Dice5 size={12}/> {equippedWeapon.damage}
+                                                                <button onClick={() => handleRollWeapon(equippedWeapon)} className="text-sm font-mono text-red-300 bg-red-900/20 px-3 py-1.5 border border-red-500/20 hover:bg-red-900/40 flex items-center gap-2 cursor-pointer transition-colors">
+                                                                    <Dice5 size={14}/> {equippedWeapon.damage}
                                                                 </button>
                                                              )}
-                                                             {isEditing && <input className="bg-red-900/30 border border-red-500/30 text-xs text-red-300 w-20 px-2 py-1 text-center" placeholder="Dano" value={equippedWeapon.damage} onChange={e => updateEquippedWeapon('damage', e.target.value)} />}
+                                                             {isEditing && <input className="bg-red-900/30 border border-red-500/30 text-sm text-red-300 w-24 px-2 py-1 text-center" placeholder="Dano" value={equippedWeapon.damage} onChange={e => updateEquippedWeapon('damage', e.target.value)} />}
                                                         </div>
-                                                        <div className="mt-2 text-xs text-gray-400 font-serif leading-relaxed grid gap-2">
+                                                        <div className="mt-4 text-sm text-gray-400 font-serif leading-relaxed grid gap-4">
                                                             {/* Description */}
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-gray-500 uppercase">Aparência e História</span>
-                                                                {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-16 resize-none mt-1 text-gray-300" value={equippedWeapon.description} onChange={e => updateEquippedWeapon('description', e.target.value)} placeholder="Descrição visual da arma..."/> : <p className="text-gray-300 mt-1">{equippedWeapon.description}</p>}
+                                                                <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Aparência e História</span>
+                                                                {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-20 resize-none text-gray-300" value={equippedWeapon.description} onChange={e => updateEquippedWeapon('description', e.target.value)} placeholder="Descrição visual da arma..."/> : <p className="text-gray-300">{equippedWeapon.description}</p>}
                                                             </div>
                                                             {/* Powers */}
                                                             <div>
-                                                                <span className="text-[9px] font-bold text-gray-500 uppercase flex items-center gap-1"><Sparkles size={10}/> Poderes e Habilidades</span>
-                                                                {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-16 resize-none mt-1 text-blue-200" value={equippedWeapon.powers} onChange={e => updateEquippedWeapon('powers', e.target.value)} placeholder="Efeitos passivos, habilidades especiais..."/> : <p className="text-blue-200 mt-1 whitespace-pre-wrap">{equippedWeapon.powers || <span className="text-gray-600 italic">Nenhum poder especial.</span>}</p>}
+                                                                <span className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-1 mb-1"><Sparkles size={12}/> Poderes e Habilidades</span>
+                                                                {isEditing ? <textarea className="w-full bg-black/30 border border-white/10 p-2 h-20 resize-none text-blue-200" value={equippedWeapon.powers} onChange={e => updateEquippedWeapon('powers', e.target.value)} placeholder="Efeitos passivos, habilidades especiais..."/> : <p className="text-blue-200 whitespace-pre-wrap">{equippedWeapon.powers || <span className="text-gray-600 italic">Nenhum poder especial.</span>}</p>}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1021,54 +1021,54 @@
                                             </div>
                                         )}
 
-                                        {activeTab === 'weapon' && <h3 className="text-[10px] font-bold uppercase text-gray-500 mb-2 mt-6 border-b border-white/10 pb-2 tracking-widest">Técnicas da Arma</h3>}
+                                        {activeTab === 'weapon' && <h3 className="text-xs font-bold uppercase text-gray-500 mb-4 mt-8 border-b border-white/10 pb-2 tracking-widest">Técnicas da Arma</h3>}
 
-                                        {char.skills.filter(s => s.category.toLowerCase() === (activeTab === 'hatsus' ? 'hatsu' : activeTab)).length === 0 && <div className="text-gray-500 italic p-4 text-center border border-dashed border-white/10">Nenhuma habilidade registrada nesta categoria.</div>}
+                                        {char.skills.filter(s => s.category.toLowerCase() === (activeTab === 'hatsus' ? 'hatsu' : activeTab)).length === 0 && <div className="text-gray-500 italic p-6 text-center border border-dashed border-white/10">Nenhuma habilidade registrada nesta categoria.</div>}
                                         {char.skills.filter(s => s.category.toLowerCase() === (activeTab === 'hatsus' ? 'hatsu' : activeTab)).map(skill => (
                                             <div key={skill.id} className="tech-border bg-[#131316] group hover:bg-white/5 transition-all relative overflow-hidden flex flex-col md:flex-row">
                                                 
                                                 {/* Skill Image Section */}
-                                                <div className="w-full md:w-32 h-32 bg-black/40 relative flex-shrink-0 border-r border-white/10">
+                                                <div className="w-full md:w-40 h-40 bg-black/40 relative flex-shrink-0 border-r border-white/10">
                                                     {skill.imageUrl ? 
                                                         <img src={skill.imageUrl} className="w-full h-full object-cover"/> 
-                                                        : <div className="w-full h-full flex items-center justify-center text-white/10"><Hexagon size={40}/></div>
+                                                        : <div className="w-full h-full flex items-center justify-center text-white/10"><Hexagon size={48}/></div>
                                                     }
                                                     {isEditing && (
                                                         <button onClick={() => triggerUpload({type: 'skill', id: skill.id})} className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                                                            <ImageIcon size={20}/>
+                                                            <ImageIcon size={24}/>
                                                         </button>
                                                     )}
                                                 </div>
 
-                                                <div className="p-4 flex-1 flex flex-col justify-between">
+                                                <div className="p-5 flex-1 flex flex-col justify-between">
                                                     <div className="flex justify-between items-start mb-2 relative z-10">
                                                         <div className="flex-1">
                                                             {isEditing ? (
-                                                                <input className="bg-transparent border-b border-white/20 text-lg font-title text-white w-full mb-1" value={skill.name} onChange={e => {
+                                                                <input className="bg-transparent border-b border-white/20 text-xl font-title text-white w-full mb-1" value={skill.name} onChange={e => {
                                                                     const newSkills = char.skills.map(s => s.id === skill.id ? {...s, name: e.target.value} : s);
                                                                     handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, skills: newSkills} : c));
                                                                 }} placeholder="Nome da Habilidade"/>
                                                             ) : (
-                                                                <h4 className="font-title text-lg text-white group-hover:text-theme transition-colors cursor-pointer" onClick={() => handleRollSkill(skill)}>{skill.name}</h4>
+                                                                <h4 className="font-title text-xl text-white group-hover:text-theme transition-colors cursor-pointer" onClick={() => handleRollSkill(skill)}>{skill.name}</h4>
                                                             )}
                                                             
-                                                            <div className="flex gap-2 items-center mt-2 flex-wrap">
+                                                            <div className="flex gap-2 items-center mt-3 flex-wrap">
                                                                 {isEditing ? (
                                                                     <>
                                                                         <input type="text" placeholder="Tipo" value={skill.type} onChange={e => {
                                                                             const newSkills = char.skills.map(s => s.id === skill.id ? {...s, type: e.target.value} : s);
                                                                             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, skills: newSkills} : c));
-                                                                        }} className="bg-black/50 border border-white/20 text-[10px] text-white w-24 px-1 py-1"/>
+                                                                        }} className="bg-black/50 border border-white/20 text-xs text-white w-24 px-2 py-1"/>
                                                                         
                                                                         <div className="flex items-center bg-black/50 border border-white/20 px-1 py-1">
                                                                             <input type="number" placeholder="Custo" value={skill.cost} onChange={e => {
                                                                                 const newSkills = char.skills.map(s => s.id === skill.id ? {...s, cost: parseInt(e.target.value)} : s);
                                                                                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, skills: newSkills} : c));
-                                                                            }} className="bg-transparent text-[10px] text-white w-8 text-center outline-none"/>
+                                                                            }} className="bg-transparent text-xs text-white w-10 text-center outline-none"/>
                                                                             <select value={skill.costType || 'Nen'} onChange={e => {
                                                                                 const newSkills = char.skills.map(s => s.id === skill.id ? {...s, costType: e.target.value} : s);
                                                                                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, skills: newSkills} : c));
-                                                                            }} className="bg-transparent text-[10px] text-gray-300 outline-none">
+                                                                            }} className="bg-transparent text-xs text-gray-300 outline-none">
                                                                                 <option value="Nen">Nen</option>
                                                                                 <option value="HP">HP</option>
                                                                             </select>
@@ -1077,71 +1077,71 @@
                                                                         <input type="text" placeholder="Dano" value={skill.damageDice} onChange={e => {
                                                                             const newSkills = char.skills.map(s => s.id === skill.id ? {...s, damageDice: e.target.value} : s);
                                                                             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, skills: newSkills} : c));
-                                                                        }} className="bg-red-900/30 border border-red-500/30 text-[10px] text-red-300 w-16 px-1 py-1 text-center"/>
+                                                                        }} className="bg-red-900/30 border border-red-500/30 text-xs text-red-300 w-20 px-2 py-1 text-center"/>
                                                                     </>
                                                                 ) : (
                                                                     <>
-                                                                        <span className="text-[9px] uppercase font-bold text-gray-400 border border-white/10 px-1 rounded">{skill.type}</span>
+                                                                        <span className="text-[10px] uppercase font-bold text-gray-400 border border-white/10 px-2 py-0.5 rounded">{skill.type}</span>
                                                                         {skill.cost > 0 && (
-                                                                            <span className={`text-[9px] font-mono flex items-center gap-1 px-1.5 py-0.5 border ${skill.costType === 'HP' ? 'text-red-300 bg-red-900/20 border-red-500/20' : 'text-blue-300 bg-blue-900/20 border-blue-500/20'}`}>
-                                                                                {skill.costType === 'HP' ? <Heart size={8}/> : <Zap size={8}/>} {skill.cost} {skill.costType === 'HP' ? 'HP' : 'AP'}
+                                                                            <span className={`text-[10px] font-mono flex items-center gap-1 px-2 py-0.5 border ${skill.costType === 'HP' ? 'text-red-300 bg-red-900/20 border-red-500/20' : 'text-blue-300 bg-blue-900/20 border-blue-500/20'}`}>
+                                                                                {skill.costType === 'HP' ? <Heart size={10}/> : <Zap size={10}/>} {skill.cost} {skill.costType === 'HP' ? 'HP' : 'AP'}
                                                                             </span>
                                                                         )}
-                                                                        {skill.damageDice && <button onClick={() => handleRollSkill(skill)} className="text-[9px] font-mono text-red-300 bg-red-900/20 px-1.5 py-0.5 border border-red-500/20 hover:bg-red-900/40 flex items-center gap-1 cursor-pointer"><Dice5 size={10}/> {skill.damageDice}</button>}
+                                                                        {skill.damageDice && <button onClick={() => handleRollSkill(skill)} className="text-[10px] font-mono text-red-300 bg-red-900/20 px-2 py-0.5 border border-red-500/20 hover:bg-red-900/40 flex items-center gap-1 cursor-pointer"><Dice5 size={12}/> {skill.damageDice}</button>}
                                                                     </>
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        {isEditing && <button onClick={() => deleteItem('skills', skill.id)} className="text-red-500 hover:text-white p-1 bg-black/50 rounded"><Trash2 size={14}/></button>}
+                                                        {isEditing && <button onClick={() => deleteItem('skills', skill.id)} className="text-red-500 hover:text-white p-2 bg-black/50 rounded"><Trash2 size={16}/></button>}
                                                     </div>
-                                                    <div className="text-xs text-gray-400 font-serif pl-2 border-l border-white/10 leading-relaxed relative z-10 mt-2">
+                                                    <div className="text-xs text-gray-400 font-serif pl-3 border-l-2 border-white/10 leading-relaxed relative z-10 mt-3">
                                                         {isEditing ? <textarea value={skill.description} onChange={e => {
                                                             const newSkills = char.skills.map(s => s.id === skill.id ? {...s, description: e.target.value} : s);
                                                             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, skills: newSkills} : c));
-                                                        }} className="w-full bg-black/30 text-gray-300 p-2 h-16 resize-none border border-white/10"/> : skill.description}
+                                                        }} className="w-full bg-black/30 text-gray-300 p-2 h-20 resize-none border border-white/10"/> : skill.description}
                                                     </div>
                                                 </div>
                                             </div>
                                         ))}
-                                        {isEditing && <button onClick={() => addItem('skill')} className="w-full py-4 border border-dashed border-white/10 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-white transition-colors">+ Adicionar Técnica</button>}
+                                        {isEditing && <button onClick={() => addItem('skill')} className="w-full py-6 border border-dashed border-white/10 text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-white hover:border-white transition-colors">+ Adicionar Técnica</button>}
                                     </div>
                                 )}
 
                                 {/* Inventory */}
                                 {activeTab === 'inventory' && (
-                                    <div className="grid grid-cols-1 gap-2">
+                                    <div className="grid grid-cols-1 gap-3">
                                         {char.inventory.map(item => (
-                                            <div key={item.id} className="flex justify-between items-center p-3 bg-white/5 border border-white/5 hover:border-white/20 transition-all">
-                                                <div className="flex items-center gap-3 flex-1">
-                                                    <Box size={16} className="text-gray-500"/>
+                                            <div key={item.id} className="flex justify-between items-center p-4 bg-white/5 border border-white/5 hover:border-white/20 transition-all">
+                                                <div className="flex items-center gap-4 flex-1">
+                                                    <Box size={20} className="text-gray-500"/>
                                                     {isEditing ? <input value={item.name} onChange={e => {
                                                         const newInv = char.inventory.map(i => i.id === item.id ? {...i, name: e.target.value} : i);
                                                         handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, inventory: newInv} : c));
-                                                    }} className="bg-transparent text-white border-b border-white/20 outline-none w-full"/> : <span className="font-mono text-sm text-gray-300">{item.name}</span>}
+                                                    }} className="bg-transparent text-white border-b border-white/20 outline-none w-full text-sm"/> : <span className="font-mono text-base text-gray-300">{item.name}</span>}
                                                 </div>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-3">
                                                     {isEditing ? <input type="number" value={item.quantity} onChange={e => {
                                                         const newInv = char.inventory.map(i => i.id === item.id ? {...i, quantity: parseInt(e.target.value)} : i);
                                                         handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, inventory: newInv} : c));
-                                                    }} className="w-12 bg-black/30 text-center text-white border border-white/10"/> : <span className="font-mono text-xs text-theme bg-black/30 px-2 py-1 rounded">x{item.quantity}</span>}
-                                                    {isEditing && <button onClick={() => deleteItem('inventory', item.id)} className="text-gray-600 hover:text-red-400"><Trash2 size={14}/></button>}
+                                                    }} className="w-16 bg-black/30 text-center text-white border border-white/10 text-sm"/> : <span className="font-mono text-xs text-theme bg-black/30 px-3 py-1.5 rounded">x{item.quantity}</span>}
+                                                    {isEditing && <button onClick={() => deleteItem('inventory', item.id)} className="text-gray-600 hover:text-red-400 p-1"><Trash2 size={18}/></button>}
                                                 </div>
                                             </div>
                                         ))}
-                                        {isEditing && <button onClick={() => addItem('item')} className="w-full py-3 border border-dashed border-white/10 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors mt-2">+ Adicionar Item</button>}
+                                        {isEditing && <button onClick={() => addItem('item')} className="w-full py-4 border border-dashed border-white/10 text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors mt-4">+ Adicionar Item</button>}
                                     </div>
                                 )}
 
                                 {/* Summons */}
                                 {activeTab === 'summons' && (
-                                    <div className="grid grid-cols-1 gap-6">
+                                    <div className="grid grid-cols-1 gap-8">
                                         
                                         {isEditing && (
                                             <button 
                                                 onClick={() => addItem('summon')} 
-                                                className="w-full py-4 mb-4 border border-dashed border-theme/50 text-theme bg-theme/5 hover:bg-theme/10 rounded font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
+                                                className="w-full py-5 mb-4 border border-dashed border-theme/50 text-theme bg-theme/5 hover:bg-theme/10 rounded font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all text-sm"
                                             >
-                                                <Plus size={16} /> Adicionar Nova Invocação
+                                                <Plus size={20} /> Adicionar Nova Invocação
                                             </button>
                                         )}
 
@@ -1149,42 +1149,42 @@
                                             <div key={summon.id} className="tech-border bg-black/20 overflow-hidden group">
                                                 {/* Header / Avatar Row */}
                                                 <div className="flex flex-col md:flex-row border-b border-white/5">
-                                                    <div className="w-full md:w-40 h-40 bg-black/40 relative flex-shrink-0 border-r border-white/10">
-                                                        {summon.avatarUrl ? <img src={summon.avatarUrl} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-white/10"><PawPrint size={40}/></div>}
+                                                    <div className="w-full md:w-48 h-48 bg-black/40 relative flex-shrink-0 border-r border-white/10">
+                                                        {summon.avatarUrl ? <img src={summon.avatarUrl} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-white/10"><PawPrint size={48}/></div>}
                                                         {isEditing && (
                                                             <button onClick={() => triggerUpload({type: 'summon', id: summon.id})} className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                                                                <ImageIcon size={20}/>
+                                                                <ImageIcon size={24}/>
                                                             </button>
                                                         )}
                                                     </div>
-                                                    <div className="p-4 flex-1">
-                                                        <div className="flex justify-between items-start mb-2">
+                                                    <div className="p-5 flex-1">
+                                                        <div className="flex justify-between items-start mb-3">
                                                             <div className="flex-1">
                                                                 {isEditing ? <input value={summon.name} onChange={e => {
                                                                     const newSummons = char.summons.map(s => s.id === summon.id ? {...s, name: e.target.value} : s);
                                                                     handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                }} className="bg-transparent border-b border-white/20 text-lg font-title text-white w-full"/> : <h4 className="font-bold text-white text-xl">{summon.name}</h4>}
+                                                                }} className="bg-transparent border-b border-white/20 text-2xl font-title text-white w-full"/> : <h4 className="font-bold text-white text-2xl">{summon.name}</h4>}
                                                                 
                                                                 {isEditing ? <input value={summon.type} onChange={e => {
                                                                     const newSummons = char.summons.map(s => s.id === summon.id ? {...s, type: e.target.value} : s);
                                                                     handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                }} className="bg-black/30 border border-white/10 text-xs text-gray-400 w-full mt-1"/> : <span className="text-[10px] uppercase font-bold text-gray-500 mt-1 block">{summon.type}</span>}
+                                                                }} className="bg-black/30 border border-white/10 text-xs text-gray-400 w-full mt-2 p-1"/> : <span className="text-xs uppercase font-bold text-gray-500 mt-2 block">{summon.type}</span>}
                                                             </div>
-                                                            {isEditing && <button onClick={() => deleteItem('summons', summon.id)} className="text-red-500 hover:text-white"><Trash2 size={16}/></button>}
+                                                            {isEditing && <button onClick={() => deleteItem('summons', summon.id)} className="text-red-500 hover:text-white p-2"><Trash2 size={20}/></button>}
                                                         </div>
                                                         
                                                         {/* Description */}
                                                         {isEditing ? <textarea value={summon.description} onChange={e => {
                                                             const newSummons = char.summons.map(s => s.id === summon.id ? {...s, description: e.target.value} : s);
                                                             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                        }} className="w-full h-20 bg-black/30 text-xs text-gray-400 p-2 border border-white/10 resize-none"/> : <p className="text-xs text-gray-400 italic line-clamp-3">"{summon.description}"</p>}
+                                                        }} className="w-full h-24 bg-black/30 text-xs text-gray-400 p-2 border border-white/10 resize-none"/> : <p className="text-xs text-gray-400 italic line-clamp-4 leading-relaxed">"{summon.description}"</p>}
                                                     </div>
                                                 </div>
                                                 
                                                 {/* Stats & Radar Row */}
-                                                <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/30 border-b border-white/5">
-                                                    <div className="flex flex-col justify-center">
-                                                        <StatBar label="HP" current={summon.currentHp} max={summon.maxHp} color="#ef4444" icon={<Heart size={10}/>} isEditing={isEditing}
+                                                <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-8 bg-black/30 border-b border-white/5">
+                                                    <div className="flex flex-col justify-center gap-2">
+                                                        <StatBar label="HP" current={summon.currentHp} max={summon.maxHp} color="#ef4444" icon={<Heart size={12}/>} isEditing={isEditing}
                                                             onChange={v => {
                                                                 const newSummons = char.summons.map(s => s.id === summon.id ? {...s, currentHp: v} : s);
                                                                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
@@ -1195,7 +1195,7 @@
                                                             }}
                                                             onOpenCalculator={() => handleOpenCalculator('summon', summon.id, 'currentHp', `HP (${summon.name})`, summon.currentHp, summon.maxHp)}
                                                         />
-                                                        <StatBar label="Nen" current={summon.currentNen} max={summon.maxNen} color={themeColor} icon={<Zap size={10}/>} isEditing={isEditing}
+                                                        <StatBar label="Nen" current={summon.currentNen} max={summon.maxNen} color={themeColor} icon={<Zap size={12}/>} isEditing={isEditing}
                                                              onChange={v => {
                                                                 const newSummons = char.summons.map(s => s.id === summon.id ? {...s, currentNen: v} : s);
                                                                 handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
@@ -1208,19 +1208,19 @@
                                                         />
                                                     </div>
                                                     <div className="flex items-center justify-center relative">
-                                                        <div className="scale-75 origin-center">
-                                                            <AttributesRadar attributes={summon.attributes} size={150} color={themeColor} />
+                                                        <div className="scale-90 origin-center">
+                                                            <AttributesRadar attributes={summon.attributes} size={180} color={themeColor} />
                                                         </div>
                                                         {isEditing && (
                                                             <div className="absolute inset-0 bg-black/80 flex flex-wrap content-center justify-center gap-1 p-2 overflow-y-auto">
                                                                 {Object.entries(summon.attributes).map(([key, val]) => (
-                                                                    <div key={key} className="flex flex-col items-center bg-white/10 p-1 w-14">
-                                                                        <span className="text-[8px] uppercase">{key.substring(0,3)}</span>
+                                                                    <div key={key} className="flex flex-col items-center bg-white/10 p-1 w-16">
+                                                                        <span className="text-[10px] uppercase mb-1">{key.substring(0,3)}</span>
                                                                         <input type="number" value={val} onChange={e => {
                                                                             const newAttrs = {...summon.attributes, [key]: parseInt(e.target.value) || 0};
                                                                             const newSummons = char.summons.map(s => s.id === summon.id ? {...s, attributes: newAttrs} : s);
                                                                             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                        }} className="w-full bg-transparent text-center text-white text-xs"/>
+                                                                        }} className="w-full bg-transparent text-center text-white text-sm font-bold"/>
                                                                     </div>
                                                                 ))}
                                                             </div>
@@ -1229,22 +1229,22 @@
                                                 </div>
 
                                                 {/* Summon Skills Section */}
-                                                <div className="p-4 bg-[#111]">
-                                                    <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 border-b border-white/10 pb-1 flex justify-between items-center">
+                                                <div className="p-5 bg-[#111]">
+                                                    <div className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3 border-b border-white/10 pb-2 flex justify-between items-center">
                                                         <span>Habilidades da Invocação</span>
-                                                        {isEditing && <button onClick={() => addItem('summonSkill', summon.id)} className="text-theme hover:text-white flex items-center gap-1"><Plus size={10}/> Add</button>}
+                                                        {isEditing && <button onClick={() => addItem('summonSkill', summon.id)} className="text-theme hover:text-white flex items-center gap-1 text-[10px]"><Plus size={12}/> Add</button>}
                                                     </div>
-                                                    <div className="space-y-2">
+                                                    <div className="space-y-3">
                                                         {(!summon.skills || summon.skills.length === 0) && <div className="text-xs text-gray-600 italic text-center py-2">Sem habilidades.</div>}
                                                         {(summon.skills || []).map(skill => (
-                                                            <div key={skill.id} className="bg-black/40 border border-white/5 p-2 rounded flex flex-col gap-1">
+                                                            <div key={skill.id} className="bg-black/40 border border-white/5 p-3 rounded flex flex-col gap-2">
                                                                 <div className="flex justify-between items-center">
                                                                     <div className="flex items-center gap-2 flex-1">
                                                                         {isEditing ? <input value={skill.name} onChange={e => {
                                                                             const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, name: e.target.value} : s);
                                                                             const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
                                                                             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                        }} className="bg-transparent border-b border-white/20 text-xs font-bold text-white w-full"/> : <span className="text-xs font-bold text-white cursor-pointer hover:text-theme" onClick={() => handleRollSkill(skill, summon.name)}>{skill.name}</span>}
+                                                                        }} className="bg-transparent border-b border-white/20 text-sm font-bold text-white w-full"/> : <span className="text-sm font-bold text-white cursor-pointer hover:text-theme" onClick={() => handleRollSkill(skill, summon.name)}>{skill.name}</span>}
                                                                     </div>
                                                                     <div className="flex items-center gap-2">
                                                                         {isEditing ? (
@@ -1253,36 +1253,36 @@
                                                                                     const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, cost: parseInt(e.target.value)} : s);
                                                                                     const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
                                                                                     handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                                }} className="w-6 text-[10px] bg-white/10 text-center"/>
+                                                                                }} className="w-8 text-xs bg-white/10 text-center p-1"/>
                                                                                  <select value={skill.costType || 'Nen'} onChange={e => {
                                                                                     const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, costType: e.target.value} : s);
                                                                                     const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
                                                                                     handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                                }} className="text-[10px] bg-black text-gray-400">
+                                                                                }} className="text-xs bg-black text-gray-400 p-1">
                                                                                     <option value="Nen">AP</option>
                                                                                     <option value="HP">HP</option>
                                                                                 </select>
                                                                              </div>
                                                                         ) : (
-                                                                            skill.cost > 0 && <span className={`text-[9px] font-mono px-1 rounded ${skill.costType === 'HP' ? 'text-red-400 bg-red-900/20' : 'text-blue-400 bg-blue-900/20'}`}>{skill.cost} {skill.costType === 'HP' ? 'HP' : 'AP'}</span>
+                                                                            skill.cost > 0 && <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${skill.costType === 'HP' ? 'text-red-400 bg-red-900/20' : 'text-blue-400 bg-blue-900/20'}`}>{skill.cost} {skill.costType === 'HP' ? 'HP' : 'AP'}</span>
                                                                         )}
                                                                         
                                                                         {isEditing ? <input value={skill.damage} onChange={e => {
                                                                             const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, damage: e.target.value} : s);
                                                                             const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
                                                                             handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                        }} className="w-10 text-[10px] bg-red-900/30 text-red-200 text-center" placeholder="Dano"/> : 
-                                                                        (skill.damage && <button onClick={() => handleRollSkill(skill, summon.name)} className="text-[9px] text-red-300 flex items-center gap-1 hover:bg-white/5 px-1 rounded"><Dice5 size={8}/> {skill.damage}</button>)}
+                                                                        }} className="w-12 text-xs bg-red-900/30 text-red-200 text-center p-1" placeholder="Dano"/> : 
+                                                                        (skill.damage && <button onClick={() => handleRollSkill(skill, summon.name)} className="text-[10px] text-red-300 flex items-center gap-1 hover:bg-white/5 px-2 py-0.5 rounded"><Dice5 size={10}/> {skill.damage}</button>)}
 
-                                                                        {isEditing && <button onClick={() => deleteItem('summonSkill', skill.id, summon.id)} className="text-gray-600 hover:text-red-500"><Trash2 size={12}/></button>}
+                                                                        {isEditing && <button onClick={() => deleteItem('summonSkill', skill.id, summon.id)} className="text-gray-600 hover:text-red-500 p-1"><Trash2 size={14}/></button>}
                                                                     </div>
                                                                 </div>
-                                                                <div className="text-[10px] text-gray-400 border-l-2 border-white/10 pl-2">
+                                                                <div className="text-xs text-gray-400 border-l-2 border-white/10 pl-3">
                                                                      {isEditing ? <textarea value={skill.description} onChange={e => {
                                                                         const newSkills = summon.skills.map(s => s.id === skill.id ? {...s, description: e.target.value} : s);
                                                                         const newSummons = char.summons.map(s => s.id === summon.id ? {...s, skills: newSkills} : s);
                                                                         handleStateUpdate(prev => prev.map(c => c.id === activeCharId ? {...c, summons: newSummons} : c));
-                                                                    }} className="w-full bg-transparent text-gray-400 resize-none h-8"/> : skill.description}
+                                                                    }} className="w-full bg-transparent text-gray-400 resize-none h-10"/> : skill.description}
                                                                 </div>
                                                             </div>
                                                         ))}
@@ -1291,26 +1291,26 @@
 
                                             </div>
                                         ))}
-                                        {isEditing && <button onClick={() => addItem('summon')} className="w-full py-3 border border-dashed border-white/10 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">+ Adicionar Invocação</button>}
+                                        {isEditing && <button onClick={() => addItem('summon')} className="w-full py-4 border border-dashed border-white/10 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors">+ Adicionar Invocação</button>}
                                     </div>
                                 )}
 
                                 {/* Bio */}
                                 {activeTab === 'bio' && (
-                                    isEditing ? <textarea className="w-full h-96 bg-black/20 border border-white/10 p-4 text-gray-300 font-serif leading-loose outline-none resize-none" value={char.bio} onChange={e => updateChar('bio', e.target.value)} /> :
-                                    <p className="font-serif text-gray-300 leading-8 text-lg whitespace-pre-wrap">{char.bio}</p>
+                                    isEditing ? <textarea className="w-full h-96 bg-black/20 border border-white/10 p-5 text-gray-300 font-serif leading-loose outline-none resize-none text-base" value={char.bio} onChange={e => updateChar('bio', e.target.value)} /> :
+                                    <p className="font-serif text-gray-300 leading-8 text-xl whitespace-pre-wrap">{char.bio}</p>
                                 )}
                             </div>
 
                              {/* Console Log Overlay (Bottom of Tab) */}
-                             <div className="absolute bottom-0 left-0 right-0 max-h-40 overflow-y-auto bg-black/90 border-t border-white/10 p-2 font-mono text-[10px] pointer-events-auto">
-                                <div className="flex flex-wrap items-center justify-between mb-1 sticky top-0 bg-black/90 w-full z-10 pb-1 gap-2">
-                                    <span className="flex items-center gap-2 text-gray-500"><Terminal size={10}/> Console de Batalha</span>
+                             <div className="absolute bottom-0 left-0 right-0 max-h-48 overflow-y-auto bg-black/95 border-t border-white/10 p-3 font-mono text-xs pointer-events-auto shadow-2xl">
+                                <div className="flex flex-wrap items-center justify-between mb-2 sticky top-0 bg-black/95 w-full z-10 pb-2 gap-2 border-b border-white/5">
+                                    <span className="flex items-center gap-2 text-gray-400 font-bold uppercase tracking-wider text-[10px]"><Terminal size={12}/> Console de Batalha</span>
                                     
                                     {/* Generic Dice Roller */}
-                                    <div className="flex items-center gap-1 bg-white/5 rounded px-2 py-0.5">
+                                    <div className="flex items-center gap-1 bg-white/5 rounded px-2 py-1">
                                         {[4,6,8,10,12,20,100].map(d => (
-                                            <button key={d} onClick={() => handleRollGeneric(d)} className="text-[9px] text-gray-400 hover:text-theme hover:bg-white/10 px-1 rounded transition-colors active:scale-90">d{d}</button>
+                                            <button key={d} onClick={() => handleRollGeneric(d)} className="text-[10px] text-gray-400 hover:text-theme hover:bg-white/10 px-1.5 py-0.5 rounded transition-colors active:scale-90 font-bold">d{d}</button>
                                         ))}
                                     </div>
 
@@ -1320,15 +1320,15 @@
                                         updateChar('currentHp', Math.min(char.maxHp, char.currentHp + healHp));
                                         updateChar('currentNen', Math.min(char.maxNen, char.currentNen + healNen));
                                         addLog('Descanso', 'Recuperado', `+${healHp} HP, +${healNen} AP (20%)`);
-                                    }} className="text-[9px] text-green-400 hover:text-green-300 flex items-center gap-1 bg-green-900/20 px-2 py-0.5 rounded border border-green-500/20"><BatteryCharging size={10}/> Descansar</button>
+                                    }} className="text-[10px] text-green-400 hover:text-green-300 flex items-center gap-1 bg-green-900/20 px-2 py-1 rounded border border-green-500/20 font-bold uppercase tracking-wider"><BatteryCharging size={12}/> Descansar</button>
                                 </div>
-                                {logs.length === 0 && <div className="text-gray-700 italic pl-4">Aguardando rolagens...</div>}
+                                {logs.length === 0 && <div className="text-gray-700 italic pl-2 py-2">Aguardando rolagens...</div>}
                                 {logs.map(log => (
-                                    <div key={log.id} className="flex gap-2 mb-1 animate-fade-in">
-                                        <span className="text-gray-600">[{log.time.toLocaleTimeString([], {hour12:false, hour:'2-digit', minute:'2-digit'})}]</span>
-                                        <span className={log.type === 'crit' ? 'text-yellow-400 font-bold' : log.type === 'fail' ? 'text-red-500' : 'text-blue-300'}>{log.title}:</span>
-                                        <span className="text-white font-bold">{log.result}</span>
-                                        <span className="text-gray-500">{log.detail}</span>
+                                    <div key={log.id} className="flex gap-2 mb-1.5 animate-fade-in pl-1 border-l-2 border-white/5 hover:border-white/20 transition-colors py-0.5">
+                                        <span className="text-gray-600 text-[10px] self-center">[{log.time.toLocaleTimeString([], {hour12:false, hour:'2-digit', minute:'2-digit'})}]</span>
+                                        <span className={`font-bold uppercase text-[10px] tracking-wide self-center ${log.type === 'crit' ? 'text-yellow-400' : log.type === 'fail' ? 'text-red-500' : 'text-blue-300'}`}>{log.title}:</span>
+                                        <span className="text-white font-bold text-sm">{log.result}</span>
+                                        <span className="text-gray-500 text-xs self-center hidden sm:inline-block">- {log.detail}</span>
                                     </div>
                                 ))}
                                 <div ref={logsEndRef} />
@@ -1341,27 +1341,27 @@
                 {isCharModalOpen && (
                     <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4">
                         <div className="tech-border bg-[#0a0a0c] w-full max-w-4xl h-[80vh] flex flex-col">
-                            <div className="p-4 border-b border-white/10 flex justify-between items-center">
-                                <h2 className="font-tech text-xl text-white uppercase tracking-widest flex items-center gap-2"><Users size={20} className="text-theme"/> Acesso ao Banco de Dados</h2>
+                            <div className="p-5 border-b border-white/10 flex justify-between items-center">
+                                <h2 className="font-tech text-2xl text-white uppercase tracking-widest flex items-center gap-3"><Users size={24} className="text-theme"/> Acesso ao Banco de Dados</h2>
                                 <button onClick={() => setIsCharModalOpen(false)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full"><X size={24} className="text-gray-400 hover:text-red-500 transition-colors"/></button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {characters.map(c => (
-                                    <div key={c.id} onClick={() => { setActiveCharId(c.id); setIsCharModalOpen(false); }} className={`p-4 border cursor-pointer hover:bg-white/5 transition-all flex flex-col gap-2 relative ${c.id === activeCharId ? 'border-theme bg-white/5' : 'border-white/10'}`}>
-                                        <h3 className="font-title text-lg text-white">{c.nickname}</h3>
+                                    <div key={c.id} onClick={() => { setActiveCharId(c.id); setIsCharModalOpen(false); }} className={`p-6 border cursor-pointer hover:bg-white/5 transition-all flex flex-col gap-3 relative ${c.id === activeCharId ? 'border-theme bg-white/5' : 'border-white/10'}`}>
+                                        <h3 className="font-title text-2xl text-white">{c.nickname}</h3>
                                         <span className="text-xs font-mono text-gray-500">{c.name} • Lvl {c.hunterLevel}</span>
-                                        <span className="text-[10px] uppercase font-bold text-theme">{c.nenType}</span>
-                                        {c.id === activeCharId && <div className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>}
+                                        <span className="text-xs uppercase font-bold text-theme tracking-widest">{c.nenType}</span>
+                                        {c.id === activeCharId && <div className="absolute top-3 right-3 w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>}
                                     </div>
                                 ))}
                                 <button onClick={() => {
                                     const newChar = {...INITIAL_CHARACTER, id: Math.random().toString(36), nickname: 'Novo Hunter', name: 'Desconhecido'};
                                     handleStateUpdate(prev => [...prev, newChar]);
-                                }} className="border border-dashed border-white/20 flex flex-col items-center justify-center p-4 text-gray-500 hover:text-white transition-colors">
-                                    <Plus size={24} className="mb-2"/> <span className="text-xs font-bold uppercase">Nova Ficha</span>
+                                }} className="border border-dashed border-white/20 flex flex-col items-center justify-center p-6 text-gray-500 hover:text-white transition-colors group">
+                                    <Plus size={32} className="mb-3 group-hover:scale-110 transition-transform"/> <span className="text-sm font-bold uppercase tracking-widest">Nova Ficha</span>
                                 </button>
                             </div>
-                            <div className="p-2 text-center text-[10px] text-gray-600 font-mono uppercase border-t border-white/10">Acesso Restrito • Schrodinger Corp.</div>
+                            <div className="p-3 text-center text-xs text-gray-600 font-mono uppercase border-t border-white/10">Acesso Restrito • Schrodinger Corp.</div>
                         </div>
                     </div>
                 )}
